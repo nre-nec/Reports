@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html class="light" lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Northern College of Nursing Dashboard</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    
+    <!-- Configuration from user request -->
+    <script>
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                primary: "#147A94",
+                "background-light": "#F8FAFC",
+                "background-dark": "#0B1526",
+                "card-light": "#FFFFFF",
+                "card-dark": "#172A46",
+                "text-light-primary": "#1E293B",
+                "text-dark-primary": "#E2E8F0",
+                "text-light-secondary": "#64748B",
+                "text-dark-secondary": "#94A3B8",
+                "border-light": "#E2E8F0",
+                "border-dark": "#334155",
+                pink: "#F4007B",
+                "light-blue": "#66B2E4",
+                green: "#059669",
+                red: "#DC2626",
+                yellow: "#FBBF24",
+                "dark-gray": "#334155"
+              },
+              fontFamily: {
+                display: ["Tajawal", "sans-serif"],
+              },
+              borderRadius: {
+                DEFAULT: "0.75rem",
+              },
+              animation: {
+                  'fade-in': 'fadeIn 0.5s ease-out',
+              },
+              keyframes: {
+                  fadeIn: {
+                      '0%': { opacity: '0', transform: 'translateY(10px)' },
+                      '100%': { opacity: '1', transform: 'translateY(0)' },
+                  }
+              }
+            },
+          },
+        };
+    </script>
+    
+    <style>
+        body {
+            direction: rtl;
+            font-family: 'Tajawal', sans-serif;
+            min-height: max(884px, 100dvh);
+        }
+        
+        /* Custom Scrollbar for tabs */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+            .bg-card-light, .dark\:bg-card-dark {
+                background-color: white !important;
+                border: 1px solid #eee !important;
+                box-shadow: none !important;
+            }
+            .text-text-light-primary, .dark\:text-text-dark-primary {
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            /* Ensure charts printed clearly */
+            .recharts-wrapper {
+                margin: 0 auto;
+            }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "recharts": "https://aistudiocdn.com/recharts@^3.5.0"
+  }
+}
+</script>
+</head>
+<body class="font-display bg-background-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary">
+    <div id="root"></div>
+</body>
+</html>
