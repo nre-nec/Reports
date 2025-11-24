@@ -18,14 +18,14 @@ export const INITIAL_DATA: AcademicYearData[] = [
     {
         id: "2022-2023",
         year: "2022-2023",
-        students: { male: 286, female: 621, total: 907 }, // Exact data from user text
+        students: { male: 286, female: 621, total: 907 }, // Exact data: Male 286, Female 621, Total 907
         faculty: { male: 23, female: 42, total: 65 },
         phdCount: 33
     },
     {
         id: "2021-2022",
         year: "2021-2022",
-        students: { male: 288, female: 581, total: 869 }, // Exact data from user text (Total calc)
+        students: { male: 288, female: 581, total: 869 }, // Exact data: Male 288, Female 581. Total calculated as 869 (288+581)
         faculty: { male: 23, female: 42, total: 65 },
         phdCount: 33
     }
