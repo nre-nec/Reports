@@ -4,14 +4,30 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Northern College of Nursing Dashboard</title>
+    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     
-    <!-- Tailwind CSS -->
+    <!-- Libraries -->
+    
+    <!-- 1. React & ReactDOM -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    
+    <!-- 2. Prop-types (Required dependency for Recharts UMD) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+    
+    <!-- 3. Recharts (Stable Version via CDNJS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"></script>
+    
+    <!-- 4. Babel (for JSX/TS compilation in browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- 5. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     
-    <!-- Configuration from user request -->
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
           darkMode: "class",
@@ -60,7 +76,8 @@
         body {
             direction: rtl;
             font-family: 'Tajawal', sans-serif;
-            min-height: max(884px, 100dvh);
+            min-height: 100vh;
+            background-color: #F8FAFC;
         }
         
         /* Custom Scrollbar for tabs */
@@ -85,21 +102,25 @@
             .text-text-light-primary, .dark\:text-text-dark-primary {
                 color: black !important;
             }
-            .no-print {
+            .no-print, header button, header label {
                 display: none !important;
             }
             /* Ensure charts printed clearly */
             .recharts-wrapper {
                 margin: 0 auto;
             }
+            /* Hide page URL/Date added by browser if possible (browser dependent) */
+            @page {
+                margin: 0.5cm;
+            }
         }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "recharts": "https://aistudiocdn.com/recharts@^3.5.0"
   }
 }
@@ -107,6 +128,457 @@
 </head>
 <body class="font-display bg-background-light dark:bg-card-dark text-text-light-primary dark:text-text-dark-primary">
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+
+    <script type="text/babel" data-presets="env,react,typescript">
+        const { useState, useEffect, useMemo } = React;
+        
+        // --- Safely Access Recharts ---
+        // We use window.Recharts to ensure we are accessing the global object loaded by the script.
+        const Recharts = window.Recharts;
+        
+        if (!Recharts) {
+            console.error("Recharts library failed to load.");
+            document.getElementById('root').innerHTML = '<div style="padding: 20px; color: red; text-align: center;">Error: Recharts library failed to load. Please check your internet connection or refresh the page.</div>';
+        }
+
+        const { 
+            PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, LineChart, Line 
+        } = Recharts;
+
+        // --- Constants & Data ---
+        const INITIAL_DATA = [
+            {
+                id: "2024-2025",
+                year: "2024-2025",
+                students: { male: 577, female: 1346, total: 1923 },
+                faculty: { male: 34, female: 53, total: 87 },
+                phdCount: 54
+            },
+            {
+                id: "2023-2024",
+                year: "2023-2024",
+                students: { male: 459, female: 1070, total: 1529 },
+                faculty: { male: 29, female: 47, total: 76 },
+                phdCount: 35
+            },
+            {
+                id: "2022-2023",
+                year: "2022-2023",
+                students: { male: 286, female: 621, total: 907 },
+                faculty: { male: 23, female: 42, total: 65 },
+                phdCount: 33
+            },
+            {
+                id: "2021-2022",
+                year: "2021-2022",
+                students: { male: 288, female: 581, total: 869 },
+                faculty: { male: 23, female: 42, total: 65 },
+                phdCount: 33
+            }
+        ];
+
+        // --- Components ---
+
+        // StatCard Component
+        const StatCard = ({ title, value, icon, colorClass, subValue }) => {
+            return (
+                <div className="bg-card-light dark:bg-card-dark p-6 rounded-xl flex items-center justify-between shadow-sm border border-border-light dark:border-border-dark hover:shadow-md transition-shadow">
+                    <div className="flex flex-col gap-2">
+                        <p className="text-lg font-medium text-text-light-secondary dark:text-text-dark-secondary">{title}</p>
+                        <div className="flex items-baseline gap-2">
+                            <p className="text-4xl font-bold text-text-light-primary dark:text-text-dark-primary">{value}</p>
+                        </div>
+                        {subValue && <p className="text-sm font-medium text-text-light-secondary">{subValue}</p>}
+                    </div>
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${colorClass}`}>
+                        <span className="material-icons text-3xl">{icon}</span>
+                    </div>
+                </div>
+            );
+        };
+
+        // YearlyCard Component
+        const YearlyCard = ({ data }) => {
+            const studentPieData = [
+                { name: 'ذكور', value: data.students.male, color: '#66B2E4' },
+                { name: 'إناث', value: data.students.female, color: '#F4007B' },
+            ];
+
+            const facultyBarData = [
+                { name: 'أعضاء هيئة التدريس', male: data.faculty.male, female: data.faculty.female }
+            ];
+
+            return (
+                <div className="space-y-6">
+                    {/* Top Row: Big Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-border-light shadow-sm flex items-center gap-4">
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+                                <span className="material-icons text-4xl">school</span>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 dark:text-gray-400 text-lg">إجمالي الطلاب</p>
+                                <p className="text-4xl font-bold text-gray-800 dark:text-white">{data.students.total}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-border-light shadow-sm flex items-center gap-4">
+                            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-yellow-600 dark:text-yellow-400">
+                                <span className="material-icons text-4xl">person_outline</span>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 dark:text-gray-400 text-lg">أعضاء هيئة التدريس</p>
+                                <p className="text-4xl font-bold text-gray-800 dark:text-white">{data.faculty.total}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-border-light shadow-sm flex items-center gap-4">
+                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg text-green-600 dark:text-green-400">
+                                <span className="material-icons text-4xl">psychology</span>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 dark:text-gray-400 text-lg">حملة الدكتوراه</p>
+                                <div className="flex items-baseline gap-2">
+                                    <p className="text-4xl font-bold text-gray-800 dark:text-white">{data.phdCount}</p>
+                                    <span className="text-sm text-green-600 font-bold bg-green-100 px-2 py-1 rounded-md">
+                                        {data.phdPercentage.toFixed(1)}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Middle Row: Charts */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Students Chart */}
+                        <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-border-light shadow-sm">
+                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-800 dark:text-white">
+                                <span className="w-2 h-8 bg-primary rounded-full"></span>
+                                توزيع الطلاب (ذكور / إناث)
+                            </h3>
+                            <div className="h-[300px] w-full flex items-center justify-center">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={studentPieData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={100}
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                        >
+                                            {studentPieData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={2} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                                <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <p className="text-sm text-gray-500">عدد الذكور</p>
+                                    <p className="text-2xl font-bold text-light-blue">{data.students.male}</p>
+                                </div>
+                                <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <p className="text-sm text-gray-500">عدد الإناث</p>
+                                    <p className="text-2xl font-bold text-pink">{data.students.female}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Faculty Chart */}
+                        <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-border-light shadow-sm">
+                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-800 dark:text-white">
+                                <span className="w-2 h-8 bg-yellow rounded-full"></span>
+                                توزيع هيئة التدريس
+                            </h3>
+                            <div className="h-[300px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={facultyBarData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E2E8F0" />
+                                        <XAxis type="number" stroke="#94A3B8" />
+                                        <YAxis dataKey="name" type="category" width={100} hide />
+                                        <Tooltip cursor={{fill: 'transparent'}} />
+                                        <Legend />
+                                        <Bar dataKey="male" name="ذكور" fill="#66B2E4" barSize={40} radius={[0, 4, 4, 0]} label={{ position: 'right', fill: '#66B2E4' }} />
+                                        <Bar dataKey="female" name="إناث" fill="#F4007B" barSize={40} radius={[0, 4, 4, 0]} label={{ position: 'right', fill: '#F4007B' }} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                             <div className="grid grid-cols-2 gap-4 mt-4">
+                                <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <p className="text-sm text-gray-500">ذكور (تدريس)</p>
+                                    <p className="text-2xl font-bold text-light-blue">{data.faculty.male}</p>
+                                </div>
+                                <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <p className="text-sm text-gray-500">إناث (تدريس)</p>
+                                    <p className="text-2xl font-bold text-pink">{data.faculty.female}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Row: Ratios */}
+                    <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-border-light shadow-sm">
+                        <h3 className="text-xl font-bold mb-4 border-b pb-2">مؤشرات الأداء (Ratios)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <div>
+                                    <p className="text-gray-500 text-base mb-1">المعدل الإجمالي للطلاب إلى أعضاء هيئة التدريس</p>
+                                    <p className="text-3xl font-bold text-primary">{data.studentToFacultyRatio.toFixed(1)} : 1</p>
+                                </div>
+                                <span className="material-icons text-4xl text-gray-300">groups</span>
+                             </div>
+                             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <div>
+                                    <p className="text-gray-500 text-base mb-1">المعدل الإجمالي للطلاب إلى حملة الدكتوراه</p>
+                                    <p className="text-3xl font-bold text-green">{data.studentToPhdRatio.toFixed(1)} : 1</p>
+                                </div>
+                                 <span className="material-icons text-4xl text-gray-300">school</span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // App Component
+        const App = () => {
+            const [data, setData] = useState(INITIAL_DATA);
+            const [activeTab, setActiveTab] = useState("overview");
+            
+            // File upload handler
+            const handleFileUpload = (event) => {
+                const file = event.target.files?.[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const json = JSON.parse(e.target?.result);
+                            if (Array.isArray(json) && json.length > 0 && json[0].year) {
+                                setData(json);
+                                alert("تم استيراد البيانات بنجاح");
+                            } else {
+                                alert("تنسيق الملف غير صالح");
+                            }
+                        } catch (error) {
+                            alert("حدث خطأ أثناء قراءة الملف");
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+
+            // File download handler
+            const handleDownload = () => {
+                const dataStr = JSON.stringify(data, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `ncn_stats_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            // Compute stats
+            const computedData = useMemo(() => {
+                return data.map(year => ({
+                    ...year,
+                    phdPercentage: year.faculty.total > 0 ? (year.phdCount / year.faculty.total) * 100 : 0,
+                    studentToPhdRatio: year.phdCount > 0 ? year.students.total / year.phdCount : 0,
+                    studentToFacultyRatio: year.faculty.total > 0 ? year.students.total / year.faculty.total : 0,
+                })).sort((a, b) => b.year.localeCompare(a.year)); // Sort descending by year
+            }, [data]);
+
+            const latestYear = computedData[0];
+            const activeYearData = computedData.find(d => d.id === activeTab);
+
+            return (
+                <div className="min-h-screen pb-10 flex flex-col bg-background-light/50">
+                    {/* Header */}
+                    <header className="bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark sticky top-0 z-50 print:static print:border-none shadow-sm">
+                        <div className="container mx-auto max-w-7xl p-4 flex justify-between items-center">
+                            <div className="flex items-center gap-4">
+                                {/* Logo */}
+                                <div className="w-20 h-20 bg-white rounded-xl shadow-sm flex items-center justify-center border border-gray-100 overflow-hidden p-1">
+                                     <img 
+                                        src="https://nre-nec.github.io/pictures/logo.png" 
+                                        alt="Northern College of Nursing Logo" 
+                                        className="w-full h-full object-contain"
+                                     />
+                                </div>
+                                <div>
+                                    <h1 className="font-bold text-xl md:text-2xl text-primary leading-tight">كلية الشمال للتمريض الأهلية</h1>
+                                    <p className="text-sm text-text-light-secondary font-medium">Northern College of Nursing</p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-3 print:hidden">
+                                 <label className="cursor-pointer p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors bg-white shadow-sm border border-gray-100" title="استيراد بيانات">
+                                    <input type="file" accept=".json" onChange={handleFileUpload} className="hidden" />
+                                    <span className="material-icons text-text-light-secondary">upload_file</span>
+                                </label>
+                                <button onClick={handleDownload} className="p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors bg-white shadow-sm border border-gray-100" title="تصدير بيانات">
+                                    <span className="material-icons text-text-light-secondary">download</span>
+                                </button>
+                                <button onClick={() => window.print()} className="p-3 rounded-full hover:bg-primary hover:text-white dark:hover:bg-gray-700 transition-colors bg-white shadow-sm border border-gray-100 text-primary" title="طباعة">
+                                    <span className="material-icons">print</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Tabs Navigation */}
+                        <div className="container mx-auto max-w-7xl px-4 flex overflow-x-auto gap-2 no-scrollbar print:hidden mt-2">
+                            <button 
+                                onClick={() => setActiveTab("overview")}
+                                className={`px-6 py-3 text-base font-bold border-b-4 whitespace-nowrap transition-colors rounded-t-lg ${
+                                    activeTab === "overview" 
+                                    ? "border-primary text-primary bg-white" 
+                                    : "border-transparent text-text-light-secondary hover:text-text-light-primary hover:bg-gray-50"
+                                }`}
+                            >
+                                نظرة عامة
+                            </button>
+                            {computedData.map(year => (
+                                <button 
+                                    key={year.id}
+                                    onClick={() => setActiveTab(year.id)}
+                                    className={`px-6 py-3 text-base font-bold border-b-4 whitespace-nowrap transition-colors rounded-t-lg ${
+                                        activeTab === year.id
+                                        ? "border-primary text-primary bg-white" 
+                                        : "border-transparent text-text-light-secondary hover:text-text-light-primary hover:bg-gray-50"
+                                    }`}
+                                >
+                                    {year.year}
+                                </button>
+                            ))}
+                        </div>
+                    </header>
+
+                    <main className="flex-1 p-6 container mx-auto max-w-7xl">
+                        
+                        {/* OVERVIEW TAB */}
+                        <div className={activeTab === "overview" ? "block" : "hidden print:hidden"}>
+                            <div className="text-center mb-10 mt-6">
+                                <h2 className="text-3xl font-bold mb-2 text-text-light-primary">لوحة المعلومات الرئيسية</h2>
+                                <p className="text-lg text-text-light-secondary">ملخص الأداء والمؤشرات لجميع الأعوام الدراسية</p>
+                            </div>
+
+                            {/* Summary Cards (Latest Year) */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                                <StatCard 
+                                    title={`إجمالي الطلاب (${latestYear?.year})`} 
+                                    value={latestYear?.students.total.toLocaleString() || '0'} 
+                                    icon="groups" 
+                                    colorClass="text-light-blue bg-light-blue/10"
+                                />
+                                <StatCard 
+                                    title="هيئة التدريس" 
+                                    value={latestYear?.faculty.total.toLocaleString() || '0'} 
+                                    icon="school" 
+                                    colorClass="text-yellow bg-yellow/10"
+                                />
+                                <StatCard 
+                                    title="حملة الدكتوراه" 
+                                    value={latestYear?.phdCount.toLocaleString() || '0'} 
+                                    subValue={`نسبة: ${latestYear?.phdPercentage.toFixed(1)}%`}
+                                    icon="psychology" 
+                                    colorClass="text-primary bg-primary/10"
+                                />
+                                <StatCard 
+                                    title="معدل الطلاب للدكتور" 
+                                    value={latestYear?.studentToPhdRatio.toFixed(1) || '0'} 
+                                    icon="timeline" 
+                                    colorClass="text-green bg-green/10"
+                                />
+                            </div>
+
+                            {/* Charts Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                                {/* Growth Chart */}
+                                <div className="bg-card-light dark:bg-card-dark p-6 rounded-xl border border-border-light dark:border-border-dark h-[500px] shadow-sm">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="font-bold text-xl text-text-light-primary">تطور أعداد الطلاب والأساتذة</h3>
+                                        <div className="p-2 bg-gray-100 rounded-lg">
+                                            <span className="material-icons text-text-light-secondary">trending_up</span>
+                                        </div>
+                                    </div>
+                                    <ResponsiveContainer width="100%" height="90%">
+                                        <LineChart data={[...computedData].reverse()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                            <XAxis dataKey="year" stroke="#64748B" fontSize={14} tickMargin={10} />
+                                            <YAxis yAxisId="left" stroke="#64748B" fontSize={14} />
+                                            <YAxis yAxisId="right" orientation="right" stroke="#64748B" fontSize={14} />
+                                            <Tooltip 
+                                                contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                                labelStyle={{ color: '#1E293B', fontWeight: 'bold', marginBottom: '8px' }}
+                                            />
+                                            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                            <Line yAxisId="left" type="monotone" dataKey="students.total" name="الطلاب" stroke="#147A94" strokeWidth={4} dot={{ r: 6, strokeWidth: 2 }} activeDot={{ r: 8 }} />
+                                            <Line yAxisId="right" type="monotone" dataKey="faculty.total" name="الأساتذة" stroke="#FBBF24" strokeWidth={4} dot={{ r: 6, strokeWidth: 2 }} activeDot={{ r: 8 }} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+
+                                {/* Gender Distribution Chart */}
+                                <div className="bg-card-light dark:bg-card-dark p-6 rounded-xl border border-border-light dark:border-border-dark h-[500px] shadow-sm">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="font-bold text-xl text-text-light-primary">توزيع الطلاب حسب الجنس</h3>
+                                        <div className="p-2 bg-gray-100 rounded-lg">
+                                            <span className="material-icons text-text-light-secondary">wc</span>
+                                        </div>
+                                    </div>
+                                    <ResponsiveContainer width="100%" height="90%">
+                                        <BarChart data={[...computedData].reverse()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                            <XAxis dataKey="year" stroke="#64748B" fontSize={14} tickMargin={10} />
+                                            <YAxis stroke="#64748B" fontSize={14} />
+                                            <Tooltip 
+                                                contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                                cursor={{fill: '#F1F5F9'}}
+                                            />
+                                            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                            <Bar dataKey="students.male" name="ذكور" fill="#66B2E4" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                                            <Bar dataKey="students.female" name="إناث" fill="#F4007B" radius={[6, 6, 0, 0]} maxBarSize={60} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* SINGLE YEAR TABS */}
+                        {activeYearData && (
+                            <div className={activeTab === activeYearData.id ? "block animate-fade-in" : "hidden"}>
+                                <div className="print:block">
+                                    <div className="mb-10 text-center print:mb-8 border-b pb-6 border-gray-200">
+                                        <h2 className="text-3xl font-bold text-primary mb-2">تقرير العام الأكاديمي {activeYearData.year}</h2>
+                                        <p className="text-lg text-text-light-secondary font-medium">وحدة الشؤون التعليمية - كلية الشمال للتمريض الأهلية</p>
+                                    </div>
+                                    
+                                    <YearlyCard data={activeYearData} />
+
+                                    {/* Additional Print Footer */}
+                                    <div className="hidden print:flex justify-between mt-12 pt-8 border-t border-gray-200 text-sm text-gray-500">
+                                        <div>تاريخ الطباعة: {new Date().toLocaleDateString('ar-SA')}</div>
+                                        <div>نظام الإحصائيات الأكاديمي - كلية الشمال للتمريض الأهلية</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
