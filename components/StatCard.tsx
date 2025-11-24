@@ -10,14 +10,16 @@ interface StatCardProps {
 
 export const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, subValue }) => {
     return (
-        <div className="bg-card-light dark:bg-card-dark p-4 rounded-lg flex items-center justify-between shadow-sm border border-border-light dark:border-border-dark">
-            <div>
-                <p className="text-sm text-text-light-secondary dark:text-text-dark-secondary mb-1">{title}</p>
-                <p className="text-xl font-bold">{value}</p>
-                {subValue && <p className="text-xs text-text-light-secondary mt-1">{subValue}</p>}
+        <div className="bg-card-light dark:bg-card-dark p-6 rounded-xl flex items-center justify-between shadow-sm border border-border-light dark:border-border-dark hover:shadow-md transition-shadow">
+            <div className="flex flex-col gap-2">
+                <p className="text-lg font-medium text-text-light-secondary dark:text-text-dark-secondary">{title}</p>
+                <div className="flex items-baseline gap-2">
+                    <p className="text-4xl font-bold text-text-light-primary dark:text-text-dark-primary">{value}</p>
+                </div>
+                {subValue && <p className="text-sm font-medium text-text-light-secondary">{subValue}</p>}
             </div>
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${colorClass}`}>
-                <span className="material-icons">{icon}</span>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${colorClass}`}>
+                <span className="material-icons text-3xl">{icon}</span>
             </div>
         </div>
     );
