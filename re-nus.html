@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقرير السنوي لقسم التمريض 2024-2025</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Animations CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Animations JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-dark: #0f3c4c;     /* كحلي غامق */
+            --primary-main: #16697a;     /* تيل غامق */
+            --primary-light: #489fb5;    /* أزرق فاتح */
+            --accent: #ffa62b;           /* برتقالي/ذهبي للإبراز */
+            --bg-body: #f4f7f6;
+            --surface: #ffffff;
+            --text-main: #2c3e50;
+            --text-light: #7f8c8d;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #c0392b;
+            --border-radius: 16px;
+            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            overflow-x: hidden;
+            background-image: radial-gradient(#16697a 0.5px, transparent 0.5px), radial-gradient(#16697a 0.5px, var(--bg-body) 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cairo', sans-serif;
+            margin-top: 0;
+        }
+
+        /* Header Styling */
+        header {
+            background: linear-gradient(120deg, var(--primary-dark), var(--primary-main));
+            color: var(--surface);
+            padding: 60px 20px 80px;
+            text-align: center;
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+            margin-bottom: -40px;
+            z-index: 10;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=');
+            opacity: 0.3;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            letter-spacing: -1px;
+        }
+
+        header h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            opacity: 0.95;
+            color: var(--accent);
+        }
+
+        header .meta-info {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-top: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.9rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* Sections */
+        section {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 6px; height: 100%;
+            background: var(--accent);
+            border-radius: 4px 0 0 4px;
+        }
+
+        h3.section-title {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h3.section-title i {
+            color: var(--primary-main);
+            background: rgba(22, 105, 122, 0.1);
+            width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* Fact Cards */
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .fact-card {
+            background: var(--surface);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border: 1px solid #eee;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-color: var(--primary-light);
+        }
+
+        .fact-card::before {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 80px; height: 80px;
+            background: var(--primary-main);
+            opacity: 0.05;
+            border-radius: 50%;
+        }
+
+        .fact-card h4 {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .fact-card .number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .fact-card .trend {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        table th {
+            background: var(--primary-dark);
+            color: var(--surface);
+            padding: 18px;
+            font-weight: 600;
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        table td {
+            padding: 16px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        table tr:last-child td { border-bottom: none; }
+        table tr:nth-child(even) { background-color: #fcfcfc; }
+        table tr:hover { background-color: #f1f7f9; }
+
+        /* KPI Dashboard */
+        .kpi-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .kpi-row {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .kpi-row:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-color: var(--primary-light);
+        }
+
+        .kpi-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .kpi-name {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .kpi-target {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .kpi-visual {
+            flex: 2;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-track {
+            flex-grow: 1;
+            height: 12px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+            background-size: 1rem 1rem;
+        }
+
+        .kpi-value {
+            font-weight: 800;
+            min-width: 60px;
+            text-align: left;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .bg-success { background-color: var(--success); }
+        .bg-danger { background-color: var(--danger); }
+        .bg-primary { background-color: var(--primary-main); }
+        
+        .kpi-row.alert {
+            border-right: 4px solid var(--danger);
+            background: #fff5f5;
+        }
+
+        /* Charts Wrapper */
+        .charts-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .chart-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #eee;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+
+        .chart-card h4 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; right: 20px;
+            width: 3px;
+            background: #e0e0e0;
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-right: 50px;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            right: 11px; top: 20px;
+            width: 16px; height: 16px;
+            background: var(--surface);
+            border: 4px solid var(--primary-main);
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.5);
+        }
+
+        .timeline-content {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .timeline-content:hover {
+            transform: translateX(-5px);
+            border-left: 4px solid var(--accent);
+        }
+
+        .timeline-content h4 {
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .timeline-content .badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            background: var(--primary-light);
+            color: #fff;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        /* Print Button */
+        .print-btn {
+            position: fixed;
+            bottom: 30px; left: 30px;
+            background: var(--primary-dark);
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(15, 60, 76, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-3px);
+            background: var(--primary-main);
+            box-shadow: 0 15px 30px rgba(22, 105, 122, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px;
+            background: var(--primary-dark);
+            color: rgba(255,255,255,0.7);
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+        
+        footer strong { color: #fff; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .kpi-row { flex-direction: column; align-items: stretch; }
+            .kpi-visual { margin-top: 10px; }
+            .timeline-item { padding-right: 30px; }
+            .timeline::before { right: 10px; }
+            .timeline-item::after { right: 1px; }
+        }
+
+        @media print {
+            body { background: #fff; background-image: none; color: #000; }
+            header { background: none; color: #000; padding: 20px; clip-path: none; border-bottom: 2px solid #000; }
+            header h1 { color: var(--primary-dark); text-shadow: none; }
+            .print-btn { display: none; }
+            section { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; page-break-inside: avoid; margin-bottom: 20px; padding: 20px; }
+            section::after { display: none; }
+            .fact-card, .chart-card, .kpi-row, .timeline-content { box-shadow: none; border: 1px solid #ccc; }
+            .progress-track { background: #eee !important; -webkit-print-color-adjust: exact; }
+            .progress-fill { -webkit-print-color-adjust: exact; }
+            h3.section-title i { display: none; } /* Hide icons in print for cleanliness */
+            .charts-wrapper { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header data-aos="fade-down">
+        <h1>كلية الشمال للتمريض الأهلية</h1>
+        <h2>قسم التمريض - التقرير السنوي</h2>
+        <div class="meta-info">
+            <i class="far fa-calendar-alt"></i> العام الأكاديمي 1446هـ (2024 / 2025م)
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. ملخص الإنجازات -->
+        <section data-aos="fade-up">
+            <h3 class="section-title"><i class="fas fa-chart-line"></i> ملخص الأداء والإنجازات</h3>
+            <div class="facts-grid">
+                <div class="fact-card">
+                    <h4><i class="fas fa-user-graduate"></i> إجمالي الطلاب</h4>
+                    <div class="number">1923</div>
+                    <div class="trend"><i class="fas fa-arrow-up"></i> 26% نمو</div>
+                </div>
+                <div class="fact-card">
+                    <h4><i class="fas fa-chalkboard-teacher"></i> هيئة التدريس</h4>
+                    <div class="number">87</div>
+                    <div class="trend"><i class="fas fa-arrow-up"></i> 15% زيادة</div>
+                </div>
+                <div class="fact-card">
+                    <h4><i class="fas fa-book-medical"></i> البحث العلمي</h4>
+                    <div class="number">68</div>
+                    <div class="trend" style="color:var(--primary-main); background: rgba(22, 105, 122, 0.1);">بحثاً منشوراً</div>
+                </div>
+                <div class="fact-card">
+                    <h4><i class="fas fa-hand-holding-heart"></i> المبادرات</h4>
+                    <div class="number">21</div>
+                    <div class="trend" style="color:var(--accent); background: rgba(255, 166, 43, 0.1);">مبادرة نوعية</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. المواءمة الاستراتيجية -->
+        <section data-aos="fade-right" data-aos-delay="100">
+            <h3 class="section-title"><i class="fas fa-bullseye"></i> المواءمة الاستراتيجية (2024-2028)</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الهدف الاستراتيجي</th>
+                            <th>الهدف التنفيذي</th>
+                            <th>أبرز الإنجازات</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>إعداد ممرضين مؤهلين</td>
+                            <td>تطوير البرنامج والجودة</td>
+                            <td>اعتماد توصيف البرنامج والمقررات</td>
+                            <td><span style="color: var(--success); font-weight: 700;"><i class="fas fa-check-circle"></i> مكتمل</span></td>
+                        </tr>
+                        <tr>
+                            <td>بيئة تعليمية جاذبة</td>
+                            <td>تطوير نظام التقويم</td>
+                            <td>رفع نسبة الاختبارات الإلكترونية إلى 23%</td>
+                            <td><span style="color: var(--success); font-weight: 700;"><i class="fas fa-star"></i> تجاوز المستهدف</span></td>
+                        </tr>
+                        <tr>
+                            <td>التميز البحثي</td>
+                            <td>النشر في قواعد Scopus</td>
+                            <td>نشر 59 بحثًا مصنفًا (Scopus)</td>
+                            <td><span style="color: var(--primary-main); font-weight: 700;">ممتاز</span></td>
+                        </tr>
+                        <tr>
+                            <td>استقطاب الكفاءات</td>
+                            <td>استبقاء هيئة التدريس</td>
+                            <td>نسبة تسرب منخفضة جداً</td>
+                            <td><span style="color: var(--primary-main); font-weight: 700;">ممتاز</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 3. لوحة المؤشرات البيانية -->
+        <section data-aos="zoom-in" data-aos-delay="200">
+            <h3 class="section-title"><i class="fas fa-chart-pie"></i> التحليل البياني للأداء</h3>
+            <div class="charts-wrapper">
+                <div class="chart-card">
+                    <h4>نمو أعداد الطلاب</h4>
+                    <canvas id="studentsChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h4>جودة النشر العلمي</h4>
+                    <canvas id="researchChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. KPI Dashboard -->
+        <section data-aos="fade-up" data-aos-delay="300">
+            <h3 class="section-title"><i class="fas fa-tachometer-alt"></i> لوحة مؤشرات الأداء (KPIs)</h3>
+            <div class="kpi-container">
+                
+                <div class="kpi-row">
+                    <div class="kpi-info">
+                        <div class="kpi-name">رضا الطلاب عن جودة المقررات</div>
+                        <div class="kpi-target">المستهدف: 4.2 / 5</div>
+                    </div>
+                    <div class="kpi-visual">
+                        <div class="progress-track">
+                            <div class="progress-fill bg-success" style="width: 87%;"></div> <!-- 4.35/5 = 87% -->
+                        </div>
+                        <div class="kpi-value" style="color: var(--success);">4.35</div>
+                    </div>
+                </div>
+
+                <div class="kpi-row">
+                    <div class="kpi-info">
+                        <div class="kpi-name">استبقاء طلاب السنة الأولى</div>
+                        <div class="kpi-target">المستهدف: 90%</div>
+                    </div>
+                    <div class="kpi-visual">
+                        <div class="progress-track">
+                            <div class="progress-fill bg-success" style="width: 98%;"></div>
+                        </div>
+                        <div class="kpi-value" style="color: var(--success);">98%</div>
+                    </div>
+                </div>
+
+                <div class="kpi-row">
+                    <div class="kpi-info">
+                        <div class="kpi-name">الاختبارات الإلكترونية</div>
+                        <div class="kpi-target">المستهدف: 20%</div>
+                    </div>
+                    <div class="kpi-visual">
+                        <div class="progress-track">
+                            <div class="progress-fill bg-primary" style="width: 23%;"></div>
+                        </div>
+                        <div class="kpi-value" style="color: var(--primary-main);">23%</div>
+                    </div>
+                </div>
+
+                <!-- Alert Item -->
+                <div class="kpi-row alert">
+                    <div class="kpi-info">
+                        <div class="kpi-name" style="color: var(--danger);">نسبة تطبيق OSCE <i class="fas fa-exclamation-circle"></i></div>
+                        <div class="kpi-target">المستهدف: 30%</div>
+                    </div>
+                    <div class="kpi-visual">
+                        <div class="progress-track">
+                            <div class="progress-fill bg-danger" style="width: 7%;"></div>
+                        </div>
+                        <div class="kpi-value" style="color: var(--danger);">7%</div>
+                    </div>
+                </div>
+
+                <div class="kpi-row alert">
+                    <div class="kpi-info">
+                        <div class="kpi-name" style="color: var(--danger);">رضا هيئة التدريس عن المكتبة</div>
+                        <div class="kpi-target">المستهدف: 3.7 / 5</div>
+                    </div>
+                    <div class="kpi-visual">
+                        <div class="progress-track">
+                            <div class="progress-fill bg-danger" style="width: 63.4%;"></div> <!-- 3.17/5 -->
+                        </div>
+                        <div class="kpi-value" style="color: var(--danger);">3.17</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 5. خطة التحسين -->
+        <section data-aos="fade-left" data-aos-delay="400">
+            <h3 class="section-title"><i class="fas fa-tasks"></i> خطة التحسين (2025/2026)</h3>
+            <div class="timeline">
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="badge">عاجل جداً</span>
+                        <h4>1. مشروع "إتقان" للمهارات السريرية</h4>
+                        <p><strong>الفجوة:</strong> انخفاض تطبيق OSCE (7%).</p>
+                        <p><strong>الإجراء:</strong> تجهيز محطات اختبار وتدريب أعضاء هيئة التدريس فوراً للوصول لنسبة 50%.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="badge">الأولوية الثانية</span>
+                        <h4>2. مشروع "المكتبة الرقمية"</h4>
+                        <p><strong>الفجوة:</strong> انخفاض الرضا عن المصادر (3.17).</p>
+                        <p><strong>الإجراء:</strong> الاشتراك في قاعدتي بيانات تمريضية عالمية (CINAHL).</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="badge">تطويري</span>
+                        <h4>3. التوسع الأكاديمي</h4>
+                        <p><strong>الفرصة:</strong> حاجة السوق.</p>
+                        <p><strong>الإجراء:</strong> استكمال ملف استحداث برامج "طب الطوارئ" و"الرعاية التنفسية".</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 6. سجل القرارات -->
+        <section data-aos="fade-up" data-aos-delay="500">
+            <h3 class="section-title"><i class="fas fa-file-signature"></i> ملحق: القرارات الجوهرية</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم الجلسة</th>
+                            <th>موضوع القرار</th>
+                            <th>حالة التنفيذ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>جلسة 4</td>
+                            <td>اعتماد معادلة شهادات اللغة الإنجليزية (IELTS/STEP)</td>
+                            <td><i class="fas fa-check" style="color:var(--success)"></i> تم التنفيذ</td>
+                        </tr>
+                        <tr>
+                            <td>جلسة 5</td>
+                            <td>البدء الإلزامي في التدريب والتطبيق لاختبارات OSCE</td>
+                            <td><i class="fas fa-spinner fa-spin" style="color:var(--warning)"></i> جاري التنفيذ</td>
+                        </tr>
+                        <tr>
+                            <td>جلسة 8</td>
+                            <td>اعتماد توصيف البرنامج والمقررات وخطط القياس</td>
+                            <td><i class="fas fa-check" style="color:var(--success)"></i> تم التنفيذ</td>
+                        </tr>
+                        <tr>
+                            <td>جلسة 10</td>
+                            <td>تحديد سقف 25% لامتياز الخارج</td>
+                            <td><i class="fas fa-check" style="color:var(--success)"></i> تم التنفيذ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة © 2025 - <strong>كلية الشمال للتمريض الأهلية</strong></p>
+        <p>إعداد: رئيس قسم التمريض</p>
+    </footer>
+
+    <button class="print-btn" onclick="window.print()">
+        <i class="fas fa-print"></i> طباعة التقرير
+    </button>
+
+    <script>
+        // Initialize Animations
+        AOS.init({
+            duration: 800,
+            offset: 100,
+            once: true
+        });
+
+        // Chart 1: Students Growth
+        const ctxStudents = document.getElementById('studentsChart').getContext('2d');
+        // Create gradient
+        let gradientStudent = ctxStudents.createLinearGradient(0, 0, 0, 400);
+        gradientStudent.addColorStop(0, 'rgba(22, 105, 122, 0.8)');
+        gradientStudent.addColorStop(1, 'rgba(22, 105, 122, 0.2)');
+
+        new Chart(ctxStudents, {
+            type: 'bar',
+            data: {
+                labels: ['2023/2024', '2024/2025'],
+                datasets: [{
+                    label: 'عدد الطلاب المقيدين',
+                    data: [1526, 1923],
+                    backgroundColor: gradientStudent,
+                    borderColor: '#16697a',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } },
+                responsive: true
+            }
+        });
+
+        // Chart 2: Research Quality
+        const ctxResearch = document.getElementById('researchChart').getContext('2d');
+        new Chart(ctxResearch, {
+            type: 'doughnut',
+            data: {
+                labels: ['مصنفة Scopus', 'أخرى'],
+                datasets: [{
+                    data: [59, 9],
+                    backgroundColor: [
+                        '#16697a', // Primary
+                        '#ffa62b'  // Accent
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
