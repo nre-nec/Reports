@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>كلية الشمال للتمريض - العرض التقديمي</title>
+    <link rel="icon" href="https://nre-nec.github.io/pictures/logo.png" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
+        :root {
+            --primary: #5D4068;
+            --secondary: #C5B358;
+            --bg-light: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: "Cairo", sans-serif; 
+            background-color: var(--bg-light); 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            color: #1e293b;
+            touch-action: none; 
+        }
+
+        /* الخلفية المتحركة */
+        .orbs { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3; animation: move 20s infinite linear; }
+        @keyframes move { 
+            0% { transform: translate(0, 0) scale(1); } 
+            33% { transform: translate(100px, 50px) scale(1.1); } 
+            66% { transform: translate(-50px, 100px) scale(0.9); } 
+            100% { transform: translate(0, 0) scale(1); } 
+        }
+        .orb1 { width: 400px; height: 400px; background: rgba(93, 64, 104, 0.15); top: -100px; right: -100px; }
+        .orb2 { width: 350px; height: 350px; background: rgba(197, 179, 88, 0.15); bottom: -100px; left: -100px; }
+
+        .container { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            position: relative; 
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0.75rem 1.5rem; 
+            background: var(--glass); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            z-index: 10;
+        }
+        .header img { width: 45px; }
+        .header .title { color: var(--primary); font-weight: 800; font-size: 1rem; }
+
+        /* منطقة الشرائح */
+        .slides-wrapper { 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+            position: relative;
+            padding: 1rem;
+        }
+
+        #slides-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: grab;
+        }
+        #slides-container:active { cursor: grabbing; }
+
+        .slide { 
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+        }
+
+        .slide-card { 
+            background: rgba(255, 255, 255, 0.92); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+            border-top: 6px solid var(--primary); 
+            border-radius: 2rem; 
+            padding: 2.5rem; 
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 1100px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            max-height: 85vh;
+            overflow: hidden;
+        }
+
+        @media (max-width: 950px) {
+            .slide-card { 
+                grid-template-columns: 1fr; 
+                max-height: 80vh; 
+                overflow-y: auto; 
+                padding: 1.5rem; 
+                gap: 1.5rem;
+            }
+            .image-container { order: -1; min-height: 180px; height: 180px; }
+            .slide .title { font-size: 1.4rem; }
+            .slide .details { font-size: 0.9rem; }
+        }
+
+        .content-container { display: flex; flex-direction: column; height: 100%; }
+        
+        .slide .icon { font-size: 2.2rem; color: var(--secondary); margin-bottom: 0.5rem; }
+        .slide .title { font-size: 1.6rem; color: var(--primary); font-weight: 900; margin-bottom: 1rem; line-height: 1.3; }
+        .slide .details { font-size: 0.95rem; color: #475569; line-height: 1.7; margin-bottom: 1.5rem; white-space: pre-line; flex: 1; }
+
+        /* الأزرار */
+        .button { 
+            background: var(--primary); 
+            color: #fff; 
+            padding: 0.6rem 1.5rem; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 0.85rem;
+            display: inline-flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            cursor: pointer; 
+            border: none; 
+            transition: var(--transition);
+            width: fit-content;
+            user-select: none;
+        }
+        .button:hover { transform: translateY(-2px); background: #4a3253; box-shadow: 0 5px 15px rgba(93, 64, 104, 0.2); }
+        .button svg { width: 0.9rem; height: 0.9rem; stroke: white; }
+
+        /* حاوية الصور */
+        .image-container {
+            background: #f1f5f9;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #cbd5e1;
+            position: relative;
+        }
+        .image-placeholder-text {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* أزرار التنقل */
+        .nav-button { 
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            background: white; 
+            color: var(--primary); 
+            border: none; 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2rem; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            z-index: 20;
+            user-select: none;
+        }
+        @media (max-width: 600px) { .nav-button { display: none; } } 
+
+        .nav-button:hover { background: var(--primary); color: white; transform: translateY(-50%) scale(1.1); }
+        .nav-prev { right: 15px; }
+        .nav-next { left: 15px; }
+
+        /* التذييل والتقدم */
+        .footer { 
+            padding: 0.75rem 1.5rem; 
+            background: var(--glass); 
+            backdrop-filter: blur(10px); 
+            border-top: 1px solid rgba(255,255,255,0.2); 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem; 
+            color: #64748b; 
+        }
+        .progress-wrapper { flex: 1; max-width: 300px; margin: 0 1rem; display: flex; align-items: center; gap: 0.8rem; }
+        .progress-bar { flex: 1; height: 6px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; width: 0%; background: var(--secondary); transition: width 0.3s ease; }
+
+        /* المودال */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            display: none; align-items: center; justify-content: center; 
+            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(10px); 
+            z-index: 100; padding: 1rem;
+        }
+        .modal { 
+            background: #fff; padding: 2.5rem; border-radius: 2rem; 
+            max-width: 700px; width: 100%; max-height: 80vh; overflow-y: auto; position: relative; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-close { position: absolute; top: 1rem; left: 1rem; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; }
+        .modal-title { font-size: 1.4rem; color: var(--primary); font-weight: 800; margin-bottom: 1.2rem; border-right: 4px solid var(--secondary); padding-right: 1rem; }
+        .modal-content { font-size: 0.95rem; color: #334155; line-height: 1.8; white-space: pre-line; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+    </div>
+
+    <div class="header">
+        <img src="https://nre-nec.github.io/pictures/logo.png" alt="Logo">
+        <div class="title">كلية الشمال للتمريض</div>
+    </div>
+
+    <div class="slides-wrapper" id="slidesWrapper">
+        <button class="nav-button nav-prev" onclick="prevSlide()" aria-label="السابق">❯</button>
+        <button class="nav-button nav-next" onclick="nextSlide()" aria-label="التالي">❮</button>
+        
+        <div id="slides-container"></div>
+    </div>
+
+    <div class="footer">
+        <div>© 2026 كلية الشمال للتمريض</div>
+        <div class="progress-wrapper">
+            <span id="slideCounter" style="font-weight: 800; color: var(--primary); min-width: 45px;">1 / 24</span>
+            <div class="progress-bar"><div class="progress-bar-fill" id="progressFill"></div></div>
+        </div>
+        <div>برنامج قياس مؤشرات الأداء</div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+</div>
+
+<script>
+    const totalSlides = 24;
+    let currentSlide = 0;
+
+    const content = [
+        {
+            icon: "⭐",
+            title: "ما لا يمكن قياسه… لا يمكن إدارته ولا تحسينه",
+            details: "هذه العبارة ليست شعارًا؛ هي قاعدة إدارية: الإدارة تعني اتخاذ قرارات، والقرار الجيد يحتاج أدلة.\nعندما لا نقيس، نتحرك بناءً على الانطباعات وهذا يقود إلى قرارات مكلفة وغير دقيقة.\nمؤشرات الأداء (KPIs) هي أدوات قياس تخبرك: هل نحن قريبون من الهدف؟ أين الانحراف؟ وماذا نفعل؟",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مركز استشارات لاحظ تذبذب أرباح دورات BLS دون دليل.\nT: تحديد السبب خلال 4 أسابيع وتحسين الربحية 10%.\nA: استخدام 4 مؤشرات فقط واكتشاف أن غياب تأكيد الحضور هو السبب. تم تفعيل رسائل التأكيد وقائمة الانتظار.\nR: ارتفع الحضور من 62% إلى 84% وتحسن هامش الربح بمعدل 18%.",
+            prompt: "Executive performance concept: measuring tape turning into upward arrow, healthcare context"
+        },
+        {
+            icon: "📈",
+            title: "لوحة السيارة: لماذا المؤشرات ليست أرقامًا؟",
+            details: "تخيّل قيادة سيارة بدون عداد سرعة: ستقود بشعورك وقد تتفاجأ بنفاد الوقود.\nكذلك المؤسسة: بدون KPIs لن تعرف هل تسير بالاتجاه الصحيح؟ وهل هناك خطر مبكر؟\nالمؤشرات تصف الواقع، تحذر مبكراً، وتوجه العمل. KPI الجيد يغير سلوك القرار.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: كثرة شكاوى المتدربين وتضارب آراء الإدارة حول السبب.\nT: حسم الجدل خلال أسبوعين حول السبب الحقيقي.\nA: قياس رضا المتدرب، زمن الاستجابة، والالتزام بالخطة. أظهرت النتائج أن زمن الاستجابة 72 ساعة.\nR: تقليص زمن الاستجابة لـ 18 ساعة وارتفاع الرضا لـ 4.2/5.",
+            prompt: "Car dashboard morphing into KPI dashboard, fuel gauge and alert icon"
+        },
+        {
+            icon: "👥",
+            title: "لماذا KPIs سلاح استراتيجي؟ ثلاث فوائد تغيّر اللعبة",
+            details: "تحسين القرار: تقليل الآراء الشخصية وزيادة الحقيقة الرقمية.\nزيادة التركيز والمواءمة: الجميع يطارد نفس الأولويات بدلاً من تشتت المبادرات.\nتعزيز المساءلة والتحفيز: وضوح مسؤولية كل موظف تجاه ما يُقاس.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: الكلية لديها 9 مبادرات جودة متزامنة لكن دون نتائج ملموسة.\nT: توحيد الجهد في 3 مؤشرات قائدة تعكس أولويات السنة.\nA: اختيار معدل اجتياز المقررات، رضا المستفيد، ونسبة إغلاق خطط التحسين.\nR: انخفاض التشتت وارتفاع نسبة إغلاق خطط التحسين من 55% إلى 82%.",
+            prompt: "Three strategic pillars: Decision, Alignment, Accountability icons"
+        },
+        {
+            icon: "🏆",
+            title: "اختيار المؤشر الصحيح: 4 معايير تمنع النتائج العكسية",
+            details: "المعايير الأربعة:\n1. الارتباط بالهدف: لا تقيس شيئاً لا يخدم هدفك الاستراتيجي.\n2. قابلية التنفيذ: لا تقيس ما لا تستطيع التأثير عليه.\n3. التركيز: (3-5 مؤشرات فقط) لتجنب الشلل التحليلي.\n4. الوضوح: معادلة محددة ومصدر بيانات واضح.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: قسم اختار مؤشر 'ثقافة الجودة' دون تعريف واضح فحدث تشتت.\nT: تحويله لمؤشرات قابلة للقياس خلال فصل دراسي.\nA: استبداله بـ: نسبة حضور الأنشطة، الالتزام بالملاحظات، وتطبيق قوائم المراجعة.\nR: تحول الثقافة لسلوك يومي ملموس بنتائج واضحة.",
+            prompt: "Four-filter KPI selection checklist, minimal modern icons"
+        },
+        {
+            icon: "⚡",
+            title: "SMART: الهدف الذكي يحدد الطريق ويمنع التلاعب",
+            details: "الأهداف الذكية تجعل العمل فعالاً:\nSpecific (محدد)، Measurable (قابل للقياس)، Achievable (واقعي)، Relevant (ذو صلة)، Time-bound (محدد بزمن).\nالقاعدة: كل هدف ذكي يجب أن يترجم لمؤشر ومستهدف ومسؤول.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: هدف المركز كان عاماً: 'زيادة جودة الدورات'.\nT: تحويله لصياغة SMART خلال 90 يوماً.\nA: الهدف الجديد: رفع الرضا لـ 4.5 بنهاية الربع الثاني عبر تقليل زمن الاستجابة وتطبيق Checklist.\nR: تحسن الرضا لـ 4.4 وانخفضت الشكاوى المتكررة.",
+            prompt: "SMART goal with target icon and metric gauge"
+        },
+        {
+            icon: "🎯",
+            title: "Leading vs Lagging: مزيج يريك المستقبل ويؤكد الماضي",
+            details: "Lagging (لاحقة): تقيس النتيجة النهائية (مثل الإيراد). دقيقة لكنها متأخرة.\nLeading (رائدة): تقيس الأنشطة التي تقود للنتيجة (مثل عدد الاتصالات). تنبؤية ويمكن التحكم بها.\nأفضل نظام أداء يجمع النوعين معاً.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: الإدارة تراقب الإيراد فقط وتكتشف الهبوط بعد فوات الأوان.\nT: إنشاء نظام إنذار مبكر خلال أسبوعين.\nA: إضافة مؤشرات رائدة: معدل التحويل ونسبة التأكيد قبل 48 ساعة.\nR: اكتشاف هبوط التحويل في الأسبوع الأول والتدخل فوراً لاستقرار الإيراد.",
+            prompt: "Windshield vs rearview mirror metaphor illustration"
+        },
+        {
+            icon: "🚀",
+            title: "قانون جودهارت وتأثير الكوبرا: فساد القياس",
+            details: "عندما يصبح المقياس هدفاً، يتوقف عن كونه مقياساً جيداً.\nالحل: استخدام مؤشرات مزدوجة (سرعة + جودة)، مراجعات دورية، صمامات أمان، وبناء ثقافة أمان نفسي ترحب بالحقيقة.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مكافأة المنسقين على عدد الدورات فقط زادت العدد وقللت الرضا.\nT: تعديل نظام القياس خلال شهر.\nA: ربط المكافأة بمزيج: عدد الدورات + رضا المتدرب + الالتزام بالاشتراطات.\nR: توقف التلاعب وارتفع الرضا واستقرت الجودة.",
+            prompt: "Cobra effect metaphor in corporate, warning sign icon"
+        },
+        {
+            icon: "💡",
+            title: "الإطار الموحد للـ KPIs: 7 خطوات للتنفيذ",
+            details: "من الرؤية للتحسين:\n1. التعريف، 2. الاختيار، 3. وضع المستهدفات، 4. المقارنة المعيارية، 5. إشراك الفريق، 6. المراقبة، 7. التكيف والتحسين.\nهذه الخطوات تمنع تحول المؤشرات لمجرد أوراق.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: هدف 'رفع الرضا' موجود لكن بلا نظام قياس موحد.\nT: بناء نظام KPI موحد للمركز خلال شهر.\nA: اتباع الخطوات السبع: ورشة للفريق، لوحة أسبوعية، وإجراءات تحسين.\nR: نتائج قابلة للمقارنة وظهور تحسن ملموس من الشهر الأول.",
+            prompt: "7-step process diagram from strategy to improvement"
+        },
+        {
+            icon: "✔️",
+            title: "PDCA: القياس الذي لا ينتهي بقرار… قياس ميت",
+            details: "دورة التحسين المستمر (Plan–Do–Check–Act):\nالتحسين الحقيقي هو خطوة (Act) أي القرار التصحيحي.\nبدون هذه الخطوة تتحول العملية لمجرد رصد بيانات بلا فائدة.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: تقرير الرضا يدور حول 4.1 دون تحسن حقيقي.\nT: رفعه لـ 4.5 خلال 8 أسابيع باستخدام PDCA.\nA: التحقق (Check) أظهر أن 60% من الشكاوى بسبب 'المكان'. التصحيح (Act): إرسال خريطة وتأكيد مسبق.\nR: ارتفاع الرضا لـ 4.46 وانخفاض شكاوى التنظيم 55%.",
+            prompt: "PDCA cycle wheel, healthcare training context"
+        },
+        {
+            icon: "❤️",
+            title: "BSC: كيف تربط الاستراتيجية بمؤشرات متوازنة؟",
+            details: "بطاقة الأداء المتوازن تعالج 4 مناظير:\n1. المالي، 2. المستفيد، 3. العمليات الداخلية، 4. التعلم والنمو.\nتمنع الرؤية الأحادية التي تركز على المال وتهمل المهارات والجودة.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: الإدارة تقيس النجاح بالإيراد فقط بينما تزيد الشكاوى.\nT: بناء BSC للمركز خلال أسبوعين.\nA: اعتماد مؤشر لكل منظور: هامش الربح، رضا المتدرب، نسبة الحضور، وتحديث المحتوى.\nR: توازن القرارات وتحسن الرب مع الرضا والاستقرار.",
+            prompt: "Balanced Scorecard 4-quadrant dashboard icons"
+        },
+        {
+            icon: "🎓",
+            title: "Cascading: إسقاط الاستراتيجية دون تشوه",
+            details: "المواءمة تعني أن يرى كل موظف دوره داخل الاستراتيجية.\nالمؤسسة → الإدارة → القسم → الفرد.\nيتطلب تعريفاً موحداً وربطاً منطقياً لضمان عدم تضارب الأولويات.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: هدف الكلية 'رفع الرضا' يفسر بشكل مختلف في كل قسم.\nT: بناء سلسلة Cascading خلال 10 أيام.\nA: توزيع المسؤوليات: التدريب مسؤول عن رضا المتدرب، الجودة عن الملاحظات، وخدمة العملاء عن زمن الرد.\nR: وضوح الأدوار وانخفاض التضارب بين الأقسام.",
+            prompt: "Strategy cascading waterfall infographic"
+        },
+        {
+            icon: "📖",
+            title: "Benchmark: اعرف ما هو المستوى المتميز",
+            details: "المقارنة المعيارية تمنع الأهداف العشوائية:\n- داخلي (بين الأقسام)، خارجي (مع جهات مشابهة)، والأفضل في المجال.\nهدف منخفض = رضا زائف. هدف مستحيل = إحباط وتلاعب.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: وضع هدف رضا 100% مما سبب ضغطاً على المتدربين.\nT: وضع هدف واقعي طموح خلال أسبوع.\nA: جمع بيانات المنافسين والمعايير الداخلية وتحديد مستهدف 4.6.\nR: توقف الضغط وارتفعت الثقة في عدالة نظام القياس.",
+            prompt: "Benchmark comparison bars with trophy icon"
+        },
+        {
+            icon: "💼",
+            title: "10 مخاطر شائعة: تعرف عليها قبل الفشل",
+            details: "أبرز المخاطر: كثرة المؤشرات، الغموض، عدم الارتباط بالاستراتيجية، تجاهل الرضا، بيانات ضعيفة، غياب المالك، وشفافية ضعيفة.\nالوعي بهذه المخاطر هو الخطوة الأولى لتجنبها.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: قسم وضع 30 مؤشراً مما أدى لاجتماعات طويلة بلا نتائج.\nT: تقليص المؤشرات لبناء نظام فعال.\nA: الاحتفاظ بـ 5 مؤشرات استراتيجية فقط وتعيين مالك لكل مؤشر.\nR: انخفاض وقت الاجتماعات 40% وتحسن تنفيذ الإجراءات.",
+            prompt: "Top 10 KPI pitfalls infographic warning icons"
+        },
+        {
+            icon: "📊",
+            title: "TQM vs التميز المؤسسي: الأساس والقمة",
+            details: "الجودة الشاملة (TQM): منهج يومي لتقليل الخطأ (الأساس).\nالتميز المؤسسي: قيمة استثنائية وابتكار (القمة).\nمحاولة الوصول للتميز بقاعدة جودة ضعيفة لا تنتج نتائج مستدامة.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مبادرة 'تميز' مع إجراءات تسجيل مليئة بالأخطاء.\nT: تثبيت أساس الجودة أولاً خلال شهر.\nA: توحيد عمليات التسجيل والشكاوى وإصدار الشهادات قبل برامج التميز.\nR: انخفاض الأخطاء الإجرائية 60% مما جعل التميز ممكناً.",
+            prompt: "Pyramid: TQM base and Excellence top"
+        },
+        {
+            icon: "⭐",
+            title: "سرد البيانات: لأن القائد يشتري المعنى",
+            details: "الإقناع لا يأتي من الرقم وحده بل من القصة خلفه.\nالسرد = قصة (ما حدث) + سبب (لماذا) + أثر (الخطر) + قرار (ماذا نفعل).\nيجب مراعاة الجمهور والسياق في عرض البيانات.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: تقرير بـ 12 جدولاً لم يحرك ساكناً لدى الإدارة العليا.\nT: تحويل التقرير لـ 3 شرائح تقود لقرار.\nA: العنوان: 'هبوط الحضور بسبب تأكيد متأخر' + دليل + توصية.\nR: اتخاذ قرار فوري بتعديل آلية التأكيد بدلاً من التجاهل.",
+            prompt: "Data storytelling ribbon with decision stamp"
+        },
+        {
+            icon: "📈",
+            title: "قاعدة 5 ثوانٍ: وضوح لوحات الأداء",
+            details: "يجب أن يفهم القائد حالة العمل (بخير أم لا) في 5 ثوانٍ.\nمبادئ الوضوح: البساطة (إزالة الزينة)، الوضوح (إبراز المهم)، والدقة (عدم التضليل).\nكثرة الألوان والرسوم المعقدة تقتل المعنى.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: داشبورد معقد بـ 20 مؤشر و8 ألوان.\nT: إعادة تصميمه ليعرض القصة في 5 ثوانٍ.\nA: اختيار 6 مؤشرات وإبراز 2 حرجة بالأعلى مع أيقونات اتجاه.\nR: النقاش صار يبدأ من 'الأحمر ولماذا' بدلاً من شرح الرسم.",
+            prompt: "Cluttered vs clean minimal dashboard design"
+        },
+        {
+            icon: "👥",
+            title: "Data-Ink Ratio: ارفع نسبة البيانات",
+            details: "كل عنصر بصري لا يخدم المعنى هو تشويش (حبر زائد).\nأزل خطوط الشبكة، الظلال، والإطارات الزائدة.\nالهدف هو إبراز المعلومة المهمة للقرار وليس استعراض التصميم.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: رسم ثلاثي الأبعاد مشتت لتقرير الحضور.\nT: جعل الانحراف يظهر بوضوح في ثوانٍ.\nA: إزالة الزخرفة وتحويله لعمودين (مستهدف vs فعلي) مع تعليق واحد.\nR: ظهر السبب بسرعة وتم توجيه الفريق للحل فوراً.",
+            prompt: "Minimal bar chart with high data-to-ink ratio"
+        },
+        {
+            icon: "🏆",
+            title: "العنوان السردي: العنوان قرار مختصر",
+            details: "العنوان الوصفي لا يحمل رسالة. العنوان السردي يحكي القصة فوراً.\nعندما تجعل العنوان يحكي القصة: تقلل وقت الفهم، ترفع جودة النقاش، وتقود مباشرة للإجراء.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مجلس الإدارة استلم تقرير 'نتائج الاستبيان' ولم يتخذ قراراً.\nT: جعل التقرير يقود لقرار واضح.\nA: تغيير العنوان لـ: 'انخفاض رضا التنظيم بسبب تغيير الوقت' مع توصية.\nR: اعتماد إجراء إشعار رسمي وارتفاع الرضا لاحقاً.",
+            prompt: "Chart with bold narrative headline illustration"
+        },
+        {
+            icon: "⚡",
+            title: "عاير التفاصيل: ثلاثة مستويات للتقارير",
+            details: "عرض البيانات حسب الجمهور:\n1. تنفيذي: قرار مطلوب ونقاط مركزة.\n2. إداري: أسباب وخطة مخاطر.\n3. تشغيلي: معادلات وتفاصيل البيانات.\nلا تُغرق القائد بالتفاصيل ولا تحرم الفني منها.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: إرسال تقرير واحد للجميع سبب شكاوى من الإطالة وعدم الوضوح.\nT: تصميم 3 قوالب خلال أسبوع.\nA: قالب تنفيذي صفحة واحدة، إداري تحليلي، وتقني دقيق.\nR: تحسن التفاعل وحصل كل مستوى على ما يحتاجه فعلياً.",
+            prompt: "Three report layers pyramid: Executive, Mgmt, Tech"
+        },
+        {
+            icon: "🎯",
+            title: "شارك التفسير: لا تقل الرقم فقط",
+            details: "البيانات بلا تفسير تُفهم خطأ. أضف دائماً جملة تفسيرية:\n'هذا خطر لأن..' أو 'فرضيتنا أن السبب..'.\nالهدف تحويل الرقم إلى معنى وتأثير وقرار ملموس.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مؤشر زمن الشهادات ارتفع لـ 9 أيام دون ذكر السبب.\nT: تقديم تفسير يوضح الخطر والحل.\nA: الصياغة: 'هذا خطر يؤخر الاعتماد، والسبب التحقق اليدوي. نقترح الأتمتة'.\nR: اتخاذ قرار التحديث وانخفض الزمن لـ 4 أيام خلال شهر.",
+            prompt: "Metric deviation with annotation bubble"
+        },
+        {
+            icon: "🚀",
+            title: "اختم بتوصية قابلة للتنفيذ",
+            details: "التقرير الناجح يجيب: ماذا حدث؟ لماذا؟ ماذا نفعل؟ من المسؤول؟ ومتى المراجعة؟\nتوصية بلا مالك وبلا موعد زمن هي مجرد أمنية لن تتحقق.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مؤشر الحضور 68% والمستهدف 85%.\nT: رفعه لـ 80% خلال 30 يوماً كخطوة أولى.\nA: التوصية: إجراء التأكيد، تحديد مالك (منسق الدورات)، وموعد بدء التنفيذ.\nR: خلال 4 أسابيع ارتفع الحضور لـ 79% وتحسن الاستقرار.",
+            prompt: "Action plan card with What/Who/When labels"
+        },
+        {
+            icon: "💡",
+            title: "بطاقة الأداء القيادية: عصا المايسترو",
+            details: "المدير يدير منظومة: وضوح أهداف، جودة تنفيذ، سلوك فريق، وحماية من التلاعب.\nتجمع البطاقة 4 مجالات: المواءمة، إدارة التنفيذ، قيادة الأفراد، والذكاء التحليلي.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مدير يضغط للسرعة فزادت الأخطاء والشكاوى.\nT: تحقيق سرعة مع جودة دون تلاعب.\nA: إضافة مؤشر حماية (جودة الإنجاز) وتشجيع الإبلاغ دون عقوبة.\nR: تحسنت السرعة وبقيت الجودة مستقرة وتوازن النظام.",
+            prompt: "Maestro conducting KPI icons orchestra"
+        },
+        {
+            icon: "✔️",
+            title: "SMARTER + التنفيذ بسرعتين",
+            details: "استخدام SMARTER للمرونة (Evaluate & Review).\nسرعتان للتنفيذ:\n1. BSC: للأهداف السنوية المستقرة.\n2. OKRs: للمشاريع السريعة والرشيقة (ربع سنوي).",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مشروع الرقمنة تأخر بسبب خطة سنوية بطيئة.\nT: إطلاق نسخة أولى خلال 6 أسابيع.\nA: استخدام OKR ربع سنوي بأهداف محددة لتقليل أخطاء البيانات وزمن التسجيل.\nR: إطلاق النسخة في موعدها وظهور نتائج قابلة للقياس.",
+            prompt: "Two-speed execution highway: BSC and OKRs"
+        },
+        {
+            icon: "❤️",
+            title: "التقارير القيادية: الإدارة بالاستثناء (RCA)",
+            details: "ركز على 'الأحمر' لتوفير وقت القيادة.\nاستخدم أدوات تحليل السبب الجذري (RCA) مثل: 5 لماذا (5 Whys) وعظمة السمكة.\nالتقرير الفعال يحدد الانحراف، السبب، والقرار المطلوب.",
+            exTitle: "مثال عملي (STAR)",
+            exContent: "S: مؤشر الحضور أحمر 68% لمدة شهرين دون معرفة السبب.\nT: إنهاء تكرار المشكلة خلال 6 أسابيع.\nA: تطبيق '5 لماذا' واكتشاف غياب مالك لعملية التأكيد. تم تعيين مالك وتحديد SLA.\nR: تراجع الإلغاء المتأخر وارتفع الحضور تدريجياً لـ 85%.",
+            prompt: "Exception report with red highlights and 5 Whys icon"
+        }
+    ];
+
+    const container = document.getElementById('slides-container');
+    const wrapper = document.getElementById('slidesWrapper');
+    const counterText = document.getElementById('slideCounter');
+    const progressFill = document.getElementById('progressFill');
+
+    function renderSlides() {
+        content.forEach((item, idx) => {
+            const slide = document.createElement('div');
+            slide.className = 'slide';
+            slide.innerHTML = `
+                <div class="slide-card">
+                    <div class="content-container">
+                        <div class="icon">${item.icon}</div>
+                        <div class="title">${item.title}</div>
+                        <div class="details">${item.details}</div>
+                        <button class="button" onclick="openModal(${idx})">
+                            <span>المثال التطبيقي</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="image-container">
+                        <div class="image-placeholder-text">
+                            <strong>[مكان مخصص للصورة]</strong><br><br>
+                            <small>${item.prompt}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(slide);
+        });
+    }
+
+    function updateSlidePosition() {
+        container.style.transform = `translateX(${currentSlide * 100}%)`;
+        counterText.textContent = `${currentSlide + 1} / ${totalSlides}`;
+        progressFill.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+            currentSlide++;
+            updateSlidePosition();
+        } else {
+            currentSlide = 0;
+            updateSlidePosition();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlidePosition();
+        } else {
+            currentSlide = totalSlides - 1;
+            updateSlidePosition();
+        }
+    }
+
+    // منطق السحب (Drag & Swipe)
+    let isDragging = false;
+    let startX = 0;
+
+    function handleStart(e) {
+        isDragging = true;
+        startX = getPositionX(e);
+        container.style.transition = 'none';
+    }
+
+    function handleMove(e) {
+        if (!isDragging) return;
+        const currentX = getPositionX(e);
+        const diff = currentX - startX;
+        const movePercent = (diff / wrapper.offsetWidth) * 100;
+        container.style.transform = `translateX(${(currentSlide * 100) + movePercent}%)`;
+    }
+
+    function handleEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        container.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+        
+        const transformMatrix = new WebKitCSSMatrix(getComputedStyle(container).transform);
+        const currentPosPercent = (transformMatrix.m41 / wrapper.offsetWidth) * 100;
+        const diff = (currentPosPercent) - (currentSlide * 100);
+
+        if (diff > 20) {
+            prevSlide();
+        } else if (diff < -20) {
+            nextSlide();
+        } else {
+            updateSlidePosition();
+        }
+    }
+
+    function getPositionX(e) {
+        return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+    }
+
+    wrapper.addEventListener('touchstart', handleStart);
+    wrapper.addEventListener('touchmove', handleMove);
+    wrapper.addEventListener('touchend', handleEnd);
+
+    wrapper.addEventListener('mousedown', handleStart);
+    wrapper.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+
+    function openModal(idx) {
+        const data = content[idx];
+        document.getElementById('modalTitle').textContent = data.exTitle;
+        document.getElementById('modalContent').textContent = data.exContent;
+        document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'ArrowLeft') nextSlide();
+        if(e.key === 'ArrowRight') prevSlide();
+        if(e.key === 'Escape') closeModal();
+    });
+
+    window.onload = () => {
+        renderSlides();
+        updateSlidePosition();
+    };
+</script>
+</body>
+</html>
