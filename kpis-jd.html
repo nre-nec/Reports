@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض تقديمي - كلية الشمال</title>
+    <link rel="icon" href="https://nre-nec.github.io/pictures/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; overflow: hidden; }
+        .text-primary { color: #5D4068; }
+        .bg-primary { background-color: #5D4068; }
+        .text-secondary { color: #C5B358; }
+        .bg-secondary { background-color: #C5B358; }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: move 20s infinite linear;
+        }
+        @keyframes move {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, 50px) scale(1.1); }
+            66% { transform: translate(-50px, 100px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        .orb-1 { width: 400px; height: 400px; background: rgba(93, 64, 104, 0.15); top: -100px; right: -100px; }
+        .orb-2 { width: 350px; height: 350px; background: rgba(197, 179, 88, 0.2); bottom: -100px; left: -100px; animation-duration: 25s; }
+        .orb-3 { width: 300px; height: 300px; background: rgba(93, 64, 104, 0.1); top: 40%; left: 30%; animation-duration: 30s; }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* SVG Path Animation Styles */
+        .animated-icon svg path,
+        .animated-icon svg circle,
+        .animated-icon svg line,
+        .animated-icon svg polyline,
+        .animated-icon svg polygon {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawPath 3s ease-in-out infinite;
+        }
+        
+        @keyframes drawPath {
+            0% { stroke-dashoffset: 1000; opacity: 0; }
+            10% { opacity: 1; }
+            50% { stroke-dashoffset: 0; }
+            90% { opacity: 1; }
+            100% { stroke-dashoffset: 1000; opacity: 0; }
+        }
+        
+        @keyframes drawIconPath {
+            0% { stroke-dashoffset: var(--path-length, 1000); opacity: 0; }
+            10% { opacity: 1; }
+            50% { stroke-dashoffset: 0; }
+            90% { opacity: 1; }
+            100% { stroke-dashoffset: var(--path-length, 1000); opacity: 0; }
+        }
+        
+        .slide-icon-animated svg {
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+        
+        .modal-icon-animated {
+            width: 32px;
+            height: 32px;
+            display: inline-block;
+        }
+        
+        .modal-icon-animated svg {
+            width: 32px !important;
+            height: 32px !important;
+            filter: drop-shadow(0 0 6px currentColor);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root" class="relative w-full h-screen h-[100svh] overflow-hidden flex flex-col bg-white" style="background-image: url('https://drive.google.com/thumbnail?id=14WJghycUZpAuNbbeMCIi1S5OIo_XIqtk&sz=s3000'); background-size: cover; background-position: center; background-color: transparent;">
+        <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+
+        <header class="flex items-center justify-between px-4 py-3 z-50 bg-white/30 backdrop-blur-md border-b border-white/20">
+            <img src="https://nre-nec.github.io/pictures/logo.png" alt="Logo" class="w-16 md:w-20 drop-shadow-sm" />
+            <div class="text-primary font-bold hidden md:block text-lg">كلية الشمال للتمريض</div>
+        </header>
+
+        <main class="flex-1 flex items-center justify-center p-2 md:p-6 overflow-y-auto relative" id="slideContainer"></main>
+
+        <footer class="flex flex-col gap-2 px-4 py-3 bg-white/50 backdrop-blur-md border-t border-white/20 z-50">
+            <div class="flex items-center justify-center gap-4">
+                <span id="slideCounter" class="text-xs md:text-sm text-gray-600 font-bold whitespace-nowrap"></span>
+                <div class="h-2 bg-gray-200/50 flex-1 rounded-full overflow-hidden">
+                    <div class="h-full bg-secondary transition-all duration-500 ease-out" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="flex items-center justify-center gap-2 pt-1 border-t border-gray-200/30">
+                <img src="https://nre-nec.github.io/pictures/logo.png" alt="Logo" class="h-4 md:h-5 opacity-70" />
+                <span class="text-xs text-gray-500 font-medium">كلية الشمال للتمريض</span>
+                <span class="text-xs text-gray-400">© 2026</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const slidesData = [{"id":1,"title":"ما لا يمكن قياسه… لا يمكن إدارته ولا تحسينه","content":"أداء الكادر الإداري هو العمود الفقري لنجاح أي كلية صحية.\nلكن… إذا لم يتم قياس أدائهم بشكل واضح، يتحول العمل الإداري إلى \"اجتهادات شخصية\" بدل أن يكون \"نظامًا مؤسسيًا\".\nالقياس هو الأداة التي تمنح الإدارة القدرة على إدارة الوقت، حل المشكلات، تحسين التجارب، وضمان رضا الطلبة وأعضاء هيئة التدريس.","image":"https://plus.unsplash.com/premium_photo-1661782589470-6d2e76a36b9d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D","modalTitle":"هدف الورشة","modalContent":"في الإدارات الإدارية — خصوصًا في البيئة التعليمية الصحية — يتأثر العمل مباشرة بجودة الخدمة ودقتها.\nولكن بدون قياس، لا نستطيع معرفة:\n\nهل شؤون الطلاب تستجيب للطلبات في وقتها؟\n\nهل المالية تعالج المستحقات والفواتير بدقة؟\n\nهل القبول والتسجيل يطبق المعايير ويقلل الأخطاء؟\n\nهل قسم الجودة يمتثل لمتطلبات الاعتماد؟\n\nهل الدعم الفني يحل مشاكل الأنظمة بسرعة؟\n\nالقياس يحدد بدقة:\n\nمن يقوم بالعمل؟\n\nهل تم إنجاز العمل؟\n\nكم استغرق الوقت؟\n\nما مستوى الجهد والجودة؟\n\nهل توجد اختناقات أو أخطاء متكررة؟\n\nالنتيجة؟\n\nبدون قياس → أداء إداري ضبابي، يعتمد على المزاج والانطباعات.\nمع القياس → أداء إداري واضح، محسّن، وقابل للسيطرة.","slideIcon":"users","modalIcon":"award","modalButtonText":"الهدف","externalLinks":[],"showExternalLinks":false},{"id":26,"title":"مثال على أهمية المؤشرات","content":"كانت الشكاوى تتكرر:\nالطلاب يقولون إن الردود بطيئة…\nأعضاء هيئة التدريس يشتكون من تأخر إرسال القوائم…\nالإدارة تشعر أن الفريق “يبذل جهده” لكن لا يوجد دليل.\n\nعند بدء القياس، ظهرت الحقائق:\nالمؤشر\tالقيمة\nمتوسط زمن الرد على الطلبات\t4 أيام\nنسبة الطلبات المكتملة من أول مرة\t52% فقط\nأكثر 3 طلبات تستهلك الوقت\t“المعادلات” – “إعادة القيد” – “التدريب السريري”","image":"https://drive.google.com/thumbnail?id=1m6kWW-0Wm6KOyHkKXESKoI2jkDEOrzjE&sz=s3000","modalTitle":"فقط تم القياس → فتم التحسين","modalContent":"تم تبسيط النماذج\n\nتوحيد مسارات الموافقات\n\nتدريب الموظفين على المهام الأكثر تكرارًا\n\nتوزيع المهام حسب الحمل\n\n📉 بعد 6 أسابيع:\n\nزمن الرد انخفض من 4 أيام → 12 ساعة فقط\n\nنسبة الدقة ارتفعت من 52% → 91%\n\nالمفاجأة؟\n\nلم تتم زيادة عدد الموظفين…\nفقط تم القياس → فتم التحسين.","slideIcon":"lightbulb","modalIcon":"chart","modalButtonText":"ماذا حصل بعد القياس؟","externalLinks":[],"showExternalLinks":false},{"id":2,"title":"القياس هو المحرّك الحقيقي للإدارة المحترفة","content":"في الإدارات الإدارية (شؤون الطلاب، المالية، القبول والتسجيل، الجودة، التقنية)، يتخذ الموظف يوميًا عشرات القرارات الصغيرة التي يمكن أن تؤثر على:\n\nرضا الطلاب\n\nجودة الخدمات\n\nتحقيق الاعتماد الأكاديمي\n\nسير العمليات\n\nدقة الأنظمة\n\nسلامة البيانات\n\nمصروفات الكليات وإيراداتها","image":"https://images.unsplash.com/photo-1551288049-bbda4e3a89e4?auto=format&fit=crop&w=800","modalTitle":"مثال تذبذب الربحية","modalContent":"يكشف الوضع الحقيقي بدقة\nلا تعتمد على \"نعتقد\" و\"أظن\".\nبل على أرقام واضحة.\n\nيحدد أولويات العمل\nما المشكلة الأكبر؟\nأين الاختناق؟\nما الذي يجب إصلاحه أولًا؟\n\nيمكّن من التنبؤ بالأزمات قبل حدوثها\nارتفاع البلاغات التقنية؟\nصعوبات مالية متكررة؟\nتزايد شكاوى الطلاب؟\nالقياس يحذر مبكرًا.\n\nيجعل القرارات قابلة للتبرير والقبول\nلأن القرار أصبح مبنيًا على حقائق وليس مشاعر.\n\nيسمح بمتابعة التطور والتحسن\nلا يمكنك التأكد أن الأمور تتحسن… إن لم تكن تقيس.","slideIcon":"chart","modalIcon":"target","modalButtonText":"لماذا يعد القياس قاعدة القرار الجيد؟","externalLinks":[],"showExternalLinks":false},{"id":27,"title":"قرار  مع غياب القياس","content":"يكشف الوضع الحقيقي بدقة\nلا تعتمد على \"نعتقد\" و\"أظن\".\nبل على أرقام واضحة.\n\nيحدد أولويات العمل\nما المشكلة الأكبر؟\nأين الاختناق؟\nما الذي يجب إصلاحه أولًا؟\n\nيمكّن من التنبؤ بالأزمات قبل حدوثها\nارتفاع البلاغات التقنية؟\nصعوبات مالية متكررة؟\nتزايد شكاوى الطلاب؟\nالقياس يحذر مبكرًا.\n\nيجعل القرارات قابلة للتبرير والقبول\nلأن القرار أصبح مبنيًا على حقائق وليس مشاعر.\n\nيسمح بمتابعة التطور والتحسن\nلا يمكنك التأكد أن الأمور تتحسن… إن لم تكن تقيس.","image":"https://drive.google.com/thumbnail?id=1vt_EeeGISurOQd9C7scc1flaplmeUWol&sz=s3000","modalTitle":"القياس لا يعطيك القرار… لكنه يعطيك الحقيقة التي يبنى عليها القرار","modalContent":"النتائج كانت صادمة:\n\n61% من التأخير كان بسبب طلب واحد فقط: \"المعادلات\".\n\nالموظفون يقضون 43% من وقتهم في هذا الطلب فقط.\n\nسبب التأخير الحقيقي: عدم وضوح المتطلبات للطلاب → مما أدى لطلبات ناقصة.\n\nالقرار الجديد المبني على قياس:\n\nتحديث نموذج المعادلة\nوضع قائمة متطلبات واضحة\nإنشاء فيديو قصير يشرح العملية\nإضافة Check-list للمستندات\nالنتيجة:\n\nانخفض التأخير بنسبة 71%\n\nلم يعد هناك حاجة لتوظيف موظفين إضافيين\n\nتم توفير تكلفة سنوية كبيرة\n\nتحسن رضا الطلاب مباشرة\n\nالدرس الذهبي:\n\nالقرار الأول مكلف وخاطئ…\nالقرار الثاني دقيق ومنخفض التكلفة…\nوالفرق بينهما هو القياس فقط.","slideIcon":"lightbulb","modalIcon":"zap","modalButtonText":"النتيجة","externalLinks":[],"showExternalLinks":false},{"id":3,"title":"لماذا KPIs سلاح استراتيجي؟","content":"مؤشرات الأداء الرئيسية (KPIs) ليست أرقامًا تُجمع من أجل التقرير…\nإنها سلاح استراتيجي يساعد الإدارة على رؤية ما لا يراه الآخرون، واتخاذ قرارات تؤثر على مستقبل المؤسسة.\n\nالفرق بين إدارة تعتمد على KPIs وإدارة بلا KPIs…\nهو الفرق بين قيادة سيارة بلوحة عدادات واضحة، وقيادتها معصوب العينين","image":"https://images.unsplash.com/photo-1493238555826-5350dd76aad8?auto=format&fit=crop&w=800","modalTitle":"2) KPIs تمنح الإدارة القدرة على التنبؤ Predictive Power","modalContent":"\nالمدير الذي يرى الأرقام مبكرًا… يعرف قبل غيره أين ستقع المشكلة.\n\nهل شكاوى الطلاب ترتفع أسبوعيًا؟\n\nهل انخفض الإقبال على التسجيل؟\n\nهل تتكرر أخطاء الفواتير؟\n\nهذه ليست معلومات…\n","slideIcon":"zap","modalIcon":"check","modalButtonText":"إنذار مبكر","externalLinks":[],"showExternalLinks":false},{"id":4,"title":"KPIs تحمي المؤسسة من القرارات الخاطئة","content":"كل قرار عشوائي مكلف:\nتوظيف غير ضروري، فتح برنامج جديد بلا جدوى، تغيير نظام، أو خفض ميزانية.\n\nKPIs تجعل القرارات مبنية على واقع وليس رغبة.","image":"https://drive.google.com/thumbnail?id=17x8DLWdRfsa4okLVA61H5dLFM0C1XWYr&sz=s3000","modalTitle":"قسم المالية vs شؤون الطلاب","modalContent":"كانت الإدارة تعتقد أن “سبب تأخر صرف المكافآت” هو قسم المالية.\n\nلكن عند وضع KPIs ظهر التالي:\n\nمؤشر 1 — زمن تجهيز البيانات من شؤون الطلاب:\n\nمتوسط 6 أيام\n\nمؤشر 2 — زمن المعالجة داخل المالية:\n\nمتوسط 48 ساعة\n\nالانكشاف الصادم:\n\n80% من التأخير… ليس من المالية.\nبل من تأخر رفع البيانات من شؤون الطلاب.\n\nالقرار الاستراتيجي؟\n\nتحسين نموذج البيانات\n\nتدريب موظفي شؤون الطلاب\n\nأتمتة عملية الربط بين النظامين\n\nالنتيجة:\n\nمدة الصرف انخفضت من 8 أيام → 48 ساعة فقط.","slideIcon":"target","modalIcon":"users","modalButtonText":"مع KPIs، تحولت الفوضى إلى وضوح","externalLinks":[],"showExternalLinks":false},{"id":5,"title":"اختيار المؤشر الصحيح: 4 معايير","content":"ليس كل رقم يعتبر KPI…\nالمؤشر الصحيح هو الذي “يُحرّك” الإدارة لاتخاذ قرار، ويقيس ما يهم فعلًا، ويسهل متابعة تحسنه.\n\nولهذا نستخدم 4 معايير لاختيار أي مؤشر إداري ناجح.","image":"https://drive.google.com/thumbnail?id=1aORl4s93uZa73ww5BTYQIj6heDxx6SrB&sz=s3000","modalTitle":"","modalContent":"","slideIcon":"lightbulb","modalIcon":"check","modalButtonText":"معايير الاختيار","externalLinks":[],"showExternalLinks":false},{"id":6,"title":"1) الارتباط بالهدف (Relevance)","content":"يجب أن يقيس المؤشر الجزء الأهم من الهدف، وليس شيئًا هامشيًا.","image":"https://images.unsplash.com/photo-1584438784894-089d6a1283c9?auto=format&fit=crop&w=800","modalTitle":"أمثلة في البيئة الإدارية التعليمية الصحية","modalContent":"هدف: تحسين رضا الطلاب\n→ المؤشر المناسب: زمن الرد على الطلبات\nوليس: عدد الاجتماعات التي عقدها القسم.\n\nهدف: تسريع الصرف المالي\n→ المؤشر: متوسط زمن معالجة الطلب المالي\nوليس: عدد الموظفين في قسم المالية.\n\nالخطأ الشائع: قياس نشاطات لا تحقق الهدف.","slideIcon":"rocket","modalIcon":"target","modalButtonText":"الخطأ الشائع","externalLinks":[],"showExternalLinks":false},{"id":7,"title":"2) قابلية التنفيذ (Actionability)","content":"المؤشر يجب أن يكون شيئًا يمكن للإدارة التأثير عليه.","image":"https://drive.google.com/thumbnail?id=1kAYNBfnwPTgRmc9hRNZNo_ezNXtFNi1u&sz=s3000","modalTitle":"المؤشرات غير القابلة للتأثير تربك الإدارة ولا تقود لتحسين.","modalContent":"مثال:\n\nنسبة قبول الطلاب التي تعتمد على قرارات الوزارة → مؤشر غير قابل للتحكم\n\nزمن تسجيل الطلاب داخل النظام → مؤشر قابل للتحكم لأنه يعتمد على القسم.\n","slideIcon":"trending","modalIcon":"zap","modalButtonText":"القيادة للتحسين","externalLinks":[],"showExternalLinks":false},{"id":8,"title":"3) التركيز (Focus)","content":"القسم القوي يقيس 3–5 مؤشرات فقط، وليس 30 مؤشرًا.\nلماذا؟\n\nلأن كثرة المؤشرات = ضياع التركيز\n\nوقلة المؤشرات = وضوح، سرعة، نتائج","image":"https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800","modalTitle":"","modalContent":"مثال:\n\nقسم شؤون الطلاب يكتفي بـ:\n\nزمن إنجاز المعاملة\n\nدقة الطلبات من أول مرة\n\nرضا الطلاب\n\nعدد البلاغات المتكررة\n\nهذه المؤشرات السبعة تغير القسم بالكامل.","slideIcon":"lightbulb","modalIcon":"award","modalButtonText":"المختصر المفيد","externalLinks":[],"showExternalLinks":false},{"id":9,"title":"4) وضوح القياس (Clarity)","content":"المؤشر يجب أن يكون واضحًا للجميع بدون تفسير إضافي:","image":"https://drive.google.com/thumbnail?id=1ob2OwJxPW2jOw2FwMd_BQafRXVtvqs0q&sz=s3000","modalTitle":"الوضوح يمنع الجدل ويُسهل المحاسبة.","modalContent":"❌ “تحسين سرعة العمل” (غامض)\n✔️ “متوسط زمن إنجاز الطلب (بالساعات)” (واضح)\n\n❌ “تقليل الأخطاء”\n✔️ “نسبة الطلبات المرتجعة بسبب نقص البيانات”\n\n","slideIcon":"book","modalIcon":"check","modalButtonText":"الوضوح ","externalLinks":[],"showExternalLinks":false},{"id":10,"title":"🌟 مثال مبهر (Storytelling داخل شؤون الطلاب)","content":"اختيار مؤشرات خاطئة\n\nقسم شؤون الطلاب كان يقيس:\n\nعدد الزيارات للمكتب\n\nعدد الاتصالات الورادة\n\nعدد الملفات المفتوحة\n\nلكن رغم ذلك، ازدادت شكاوى الطلاب.","image":"https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800","modalTitle":"عند مراجعة المعايير الأربعة، وجدنا:","modalContent":"المؤشرات لا ترتبط بالهدف (Relevance)\n\nلا يمكن اتخاذ قرار بناء عليها (Actionability)\n\nكثيرة ومشتتة (Focus)\n\nغامضة وغير قابلة للقياس بدقة (Clarity)\nإعادة بناء KPIs وفق المعايير الأربعة:\n\nزمن إنجاز الطلب — Relevance\n\nنسبة الطلبات الناقصة — Actionability\n\n3 مؤشرات فقط — Focus\n\nوحدة قياس واضحة (بالساعات) — Clarity","slideIcon":"zap","modalIcon":"trending","modalButtonText":"اختيار KPI خاطئ يقود قسمًا كاملًا إلى الطريق الخطأ","externalLinks":[],"showExternalLinks":false},{"id":28,"title":"الأساس الاستراتيجي لإدارة الأداء","content":"بطاقة الوصف الوظيفي ليست ورقة لتعبئة الملفات…\nهي الأساس الاستراتيجي لإدارة الأداء.\n\nفي البيئة التعليمية الصحية، كل دور إداري — من شؤون الطلاب إلى المالية إلى الجودة — مرتبط مباشرة بمخرجات حساسة تؤثر على:\n\nرضا الطلاب\n\nسلامة البيانات\n\nنجاح الاعتماد\n\nسلاسة التدريب السريري\n\nدقة الأنظمة\n\nكفاءة العمليات\n\nمستوى الخدمة","image":"https://drive.google.com/thumbnail?id=1ch_MOeE9yFp6MkbbKKbpbygh-sWid82Q&sz=s3000","modalTitle":"مثال إضافي","modalContent":"يجب أن يعرف كل موظف ثلاثة أشياء بوضوح:\n\n1) ماذا يجب أن يفعل؟ (الواجبات)\n2) ما الذي يتحمل مسؤوليته؟ (المسؤوليات)\n3) كيف سيتم قياسه؟ (KPIs)","slideIcon":"lightbulb","modalIcon":"zap","modalButtonText":"ثلاث قواعد","externalLinks":[],"showExternalLinks":false},{"id":29,"title":"بطاقة الوصف الوظيفي ليست “وثيقة HR”…","content":"بطاقة الوصف الوظيفي ليست “وثيقة HR”\nهي “خارطة طريق وظيفية” تضمن أن يعرف الموظف دوره، وأن تستطيع الإدارة تقييمه بعدل ووضوح","image":"https://drive.google.com/thumbnail?id=1-1d2Igi9ny88V301z0INXrkh2YZm8Kxh&sz=s3000","modalTitle":"مثال إضافي","modalContent":"تفاصيل إضافية لهذا المثال تظهر هنا...","slideIcon":"lightbulb","modalIcon":"zap","modalButtonText":"مثال عملي","externalLinks":[{"url":"http://nre-nec.com/fil/Job-description-card.html","label":"بطاقة الوصف الوظيفي"}],"showExternalLinks":true},{"id":30,"title":"نموذج JAA","content":"تعلم كيفية صياغة بطاقة الوصف الوظيفي","image":"","modalTitle":"مثال إضافي","modalContent":"تفاصيل إضافية لهذا المثال تظهر هنا...","slideIcon":"lightbulb","modalIcon":"zap","modalButtonText":"مثال عملي","externalLinks":[{"url":"http://nre-nec.com/fil/JAA.html","label":"نموذج JAA"}],"showExternalLinks":true}];
+        let currentIndex = 0;
+        let startX = 0;
+        
+        const heroIcons = {
+            'star': '<svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>',
+            'trending': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 17"/><polyline points="17 6 23 6 23 12"/></svg>',
+            'users': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+            'award': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8 14 12 17 16 14"/><line x1="12" y1="17" x2="12" y2="23"/><line x1="9" y1="20" x2="15" y2="20"/></svg>',
+            'zap': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+            'target': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9"/></svg>',
+            'rocket': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5-1.5-2-5-2-5s3.5-.5 5-2l.5.5-.5.5c1.5 1.5 1 4 .5 5.5"/><path d="M12 6v6m6-6v6"/><circle cx="12" cy="12" r="10"/></svg>',
+            'lightbulb': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6m-9-2h12a2 2 0 0 0 1.697-3.153l-.653-1.306a2 2 0 0 1-.221-1.126V7a4 4 0 0 0-8 0v3.415a2 2 0 0 1-.221 1.126l-.653 1.306A2 2 0 0 0 6 16z"/></svg>',
+            'check': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+            'heart': '<svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+            'graduation': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 19V5c0-1-1-2-2-2H5c-1 0-2 1-2 2v14m20 0l-9-7-9 7m14-3v5m-8 0v5"/></svg>',
+            'book': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+            'briefcase': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>',
+            'chart': '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>'
+        };
+        
+        function renderSlide(index) {
+            const slide = slidesData[index];
+            const slideHTML = `
+                <div class="w-full max-w-6xl glass-card rounded-3xl shadow-2xl overflow-hidden border-t-8 border-primary flex flex-col md:flex-row relative z-10 mx-auto my-auto" style="height: auto;">
+                    <div class="${slide.image ? 'md:w-2/3' : 'w-full text-center'} p-5 md:p-10 flex flex-col justify-center">
+                        <div class="mb-4 md:mb-6">
+                            <div class="text-4xl md:text-6xl mb-2 md:mb-3 text-secondary slide-icon-animated animated-icon" id="slideIconContainer"></div>
+                            <h1 class="text-xl sm:text-2xl md:text-5xl font-black text-primary leading-tight">${slide.title}</h1>
+                        </div>
+                        <div class="text-base sm:text-lg md:text-2xl text-gray-700 leading-relaxed whitespace-pre-wrap mb-6 md:mb-8 font-medium">
+                            ${slide.content}
+                        </div>
+                        <div class="${!slide.image ? 'mx-auto' : ''} mt-auto pb-2">
+                            <button onclick="showModal()" class="bg-primary text-white px-6 md:px-8 py-2 md:py-3 rounded-full text-sm md:text-lg shadow-lg flex items-center gap-2 hover:bg-[#4a3252] transition-transform active:scale-95 font-bold">
+                                <span>${slide.modalButtonText || 'مثال عملي'}</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                        </div>
+                        ${slide.showExternalLinks && slide.externalLinks && slide.externalLinks.length > 0 ? `
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <div class="text-sm font-bold text-gray-600 mb-2">روابط خارجية:</div>
+                                <div class="flex flex-wrap gap-2">
+                                    ${slide.externalLinks.map(link => `
+                                        <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="bg-secondary text-primary px-4 py-2 rounded-full text-sm font-bold hover:brightness-110 transition-all flex items-center gap-2">
+                                            <span>${link.label || link.url}</span>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                <polyline points="15 3 21 3 21 9"></polyline>
+                                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                                            </svg>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    ${slide.image ? `
+                        <div class="md:w-1/3 bg-gray-50/50 flex items-center justify-center p-4 border-t md:border-t-0 md:border-r border-gray-200/50">
+                            <img src="${slide.image}" class="w-auto h-auto max-w-full max-h-[80vh] object-contain rounded-lg shadow-sm mx-auto" />
+                        </div>
+                    ` : ''}
+                </div>
+                <button onclick="prevSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 p-4 bg-white/80 rounded-full shadow-lg hover:bg-primary hover:text-white transition hidden md:block z-20">❯</button>
+                <button onclick="nextSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 p-4 bg-white/80 rounded-full shadow-lg hover:bg-primary hover:text-white transition hidden md:block z-20">❮</button>
+                <div id="modalOverlay" class="fixed inset-0 bg-primary/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md hidden" onclick="closeModal()">
+                    <div class="bg-white/95 w-full max-w-lg rounded-2xl p-6 md:p-8 shadow-2xl relative text-center" onclick="event.stopPropagation()">
+                        <button onclick="closeModal()" class="absolute top-4 left-4 text-gray-400">✕</button>
+                        <div class="text-secondary mb-3 flex justify-center modal-icon-animated animated-icon" id="modalIconContainer"></div>
+                        <h2 class="text-xl md:text-3xl font-bold text-primary mb-4">${slide.modalTitle}</h2>
+                        <div class="text-sm md:text-lg text-gray-600 bg-gray-50/50 p-4 rounded-xl border-r-4 border-secondary max-h-96 overflow-y-auto font-medium">${slide.modalContent}</div>
+                    </div>
+                </div>`;
+            document.getElementById('slideContainer').innerHTML = slideHTML;
+            
+            // Add Icons logic to standalone
+            const slideIcon = heroIcons[slide.slideIcon] || '<span class="text-4xl text-secondary">✦</span>';
+            const modalIcon = heroIcons[slide.modalIcon] || '<span class="text-4xl text-secondary">✦</span>';
+            document.getElementById('slideIconContainer').innerHTML = slideIcon;
+            document.getElementById('modalIconContainer').innerHTML = modalIcon;
+
+            // Apply path animation to icons
+            setTimeout(() => {
+                const animateIconPaths = (containerId) => {
+                    const container = document.getElementById(containerId);
+                    if (!container) return;
+                    const svg = container.querySelector('svg');
+                    if (!svg) return;
+                    
+                    const paths = svg.querySelectorAll('path, circle, line, polyline, polygon');
+                    paths.forEach((path, idx) => {
+                        try {
+                            const length = path.getTotalLength();
+                            if (length > 0) {
+                                path.style.strokeDasharray = length;
+                                path.style.strokeDashoffset = length;
+                                path.style.animation = `drawIconPath 3s ease-in-out infinite`;
+                                path.style.animationDelay = (idx * 0.2) + 's';
+                                
+                                // For filled paths, convert to stroke
+                                if (path.getAttribute('fill') && path.getAttribute('fill') !== 'none') {
+                                    path.setAttribute('fill', 'none');
+                                    path.setAttribute('stroke', 'currentColor');
+                                    path.setAttribute('stroke-width', '2');
+                                }
+                            }
+                        } catch(e) {}
+                    });
+                };
+                
+                animateIconPaths('slideIconContainer');
+                animateIconPaths('modalIconContainer');
+            }, 100);
+
+            document.getElementById('slideCounter').textContent = 'الشريحة ' + (index + 1) + ' من ' + slidesData.length;
+            document.getElementById('progressFill').style.width = ((index + 1) / slidesData.length * 100) + '%';
+        }
+
+        function nextSlide() { currentIndex = (currentIndex + 1) % slidesData.length; renderSlide(currentIndex); }
+        function prevSlide() { currentIndex = (currentIndex - 1 + slidesData.length) % slidesData.length; renderSlide(currentIndex); }
+        function showModal() { document.getElementById('modalOverlay').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+
+        document.addEventListener('keydown', e => {
+            if(e.key==='ArrowLeft') nextSlide();
+            if(e.key==='ArrowRight') prevSlide();
+            if(e.key==='Escape') closeModal();
+        });
+
+        document.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+        document.addEventListener('touchend', e => {
+            const diff = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) diff > 0 ? nextSlide() : prevSlide();
+        });
+
+        renderSlide(0);
+    </script>
+</body>
+</html>
