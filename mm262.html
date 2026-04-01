@@ -2,8 +2,13 @@
 <html lang="ar" dir="rtl" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>لوحة مؤشرات الأداء الأكاديمي | الكلية</title>
+    
+    <!-- أيقونات المتصفح وتطبيق الويب -->
+    <link rel="icon" type="image/png" href="https://nre-nec.github.io/pictures/logo-p.png">
+    <link rel="apple-touch-icon" href="https://nre-nec.github.io/pictures/logo-p.png">
+    <meta name="apple-mobile-web-app-title" content="مؤشرات الأداء">
     
     <!-- خطوط جوجل (Cairo) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,34 +37,34 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 
     <style>
-        body { transition: background-color 0.3s ease, color 0.3s ease; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        body { transition: background-color 0.3s ease, color 0.3s ease; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
         .kpi-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .kpi-card:hover { transform: translateY(-2px); }
+        @media (hover: hover) {
+            .kpi-card:hover { transform: translateY(-2px); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
 
     <!-- شريط التنقل العلوي -->
-    <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
+    <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-300 shadow-sm">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-14 md:h-16 items-center">
                 
-                <div class="flex items-center gap-3">
-                    <div class="bg-primary-100 dark:bg-primary-900/30 p-2 rounded-lg text-primary-600 dark:text-primary-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    </div>
+                <div class="flex items-center gap-2 md:gap-3">
+                    <img src="https://nre-nec.github.io/pictures/logo-p.png" alt="شعار الكلية" class="h-9 md:h-12 w-auto object-contain">
                     <div>
-                        <h1 class="font-bold text-lg md:text-xl leading-tight">لوحة مؤشرات الأداء</h1>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">نظام دعم اتخاذ القرار الأكاديمي</p>
+                        <h1 class="font-bold text-sm md:text-lg lg:text-xl leading-tight">لوحة مؤشرات الأداء</h1>
+                        <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">نظام دعم اتخاذ القرار الأكاديمي-الاختبارات النهائية للفصل الثاني 2025-2026</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 md:gap-4">
-                    <button id="themeToggle" title="تبديل المظهر" class="p-2 text-gray-500 hover:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 rounded-lg transition-colors">
+                <div class="flex items-center gap-1 md:gap-4">
+                    <button id="themeToggle" title="تبديل المظهر" class="p-2 text-gray-500 hover:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 rounded-lg transition-colors focus:outline-none">
                         <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                     </button>
@@ -68,107 +73,106 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-8 space-y-4 md:space-y-6">
         
         <!-- بطاقات المؤشرات (KPIs) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             
-            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-3 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">إجمالي الطلاب المسجلين</p>
-                        <h3 id="kpi-students" class="text-3xl font-bold text-gray-800 dark:text-white">--</h3>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">الطلاب المسجلين</p>
+                        <h3 id="kpi-students" class="text-xl md:text-3xl font-bold text-gray-800 dark:text-white">--</h3>
                     </div>
-                    <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <div class="hidden sm:block p-2 md:p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-sm">
+                <div class="mt-2 md:mt-4 flex items-center text-[10px] md:text-sm">
                     <span class="text-green-500 font-bold flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                        الرقم الفعلي من البيانات
+                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        بيانات فعلية
                     </span>
                 </div>
             </div>
 
-            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-3 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">إجمالي المقررات (الفريدة)</p>
-                        <h3 id="kpi-courses" class="text-3xl font-bold text-gray-800 dark:text-white">--</h3>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">إجمالي المقررات</p>
+                        <h3 id="kpi-courses" class="text-xl md:text-3xl font-bold text-gray-800 dark:text-white">--</h3>
                     </div>
-                    <div class="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <div class="hidden sm:block p-2 md:p-3 bg-orange-50 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-sm">
-                    <span class="text-gray-500 dark:text-gray-400">بإجمالي <span id="kpi-sections" class="font-bold text-gray-800 dark:text-gray-200">--</span> شعبة مفعلة</span>
+                <div class="mt-2 md:mt-4 flex items-center text-[10px] md:text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">بإجمالي <span id="kpi-sections" class="font-bold text-gray-800 dark:text-gray-200">--</span> شعبة</span>
                 </div>
             </div>
 
-            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-3 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">شعب الذكور</p>
-                        <h3 id="kpi-male-sec" class="text-3xl font-bold text-blue-600 dark:text-blue-400">--</h3>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">شعب الذكور</p>
+                        <h3 id="kpi-male-sec" class="text-xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">--</h3>
                     </div>
-                    <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <div class="hidden sm:block p-2 md:p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-sm">
+                <div class="mt-2 md:mt-4 flex items-center text-[10px] md:text-sm">
                     <span class="text-gray-500 dark:text-gray-400">تستوعب <span id="kpi-male-stu" class="font-bold text-gray-800 dark:text-gray-200">--</span> طالب</span>
                 </div>
             </div>
 
-            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-3 md:p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">شعب الإناث</p>
-                        <h3 id="kpi-female-sec" class="text-3xl font-bold text-pink-600 dark:text-pink-400">--</h3>
+                        <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">شعب الإناث</p>
+                        <h3 id="kpi-female-sec" class="text-xl md:text-3xl font-bold text-pink-600 dark:text-pink-400">--</h3>
                     </div>
-                    <div class="p-3 bg-pink-50 dark:bg-pink-900/30 rounded-lg text-pink-600 dark:text-pink-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <div class="hidden sm:block p-2 md:p-3 bg-pink-50 dark:bg-pink-900/30 rounded-lg text-pink-600 dark:text-pink-400">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center text-sm">
+                <div class="mt-2 md:mt-4 flex items-center text-[10px] md:text-sm">
                     <span class="text-gray-500 dark:text-gray-400">تستوعب <span id="kpi-female-stu" class="font-bold text-gray-800 dark:text-gray-200">--</span> طالبة</span>
                 </div>
             </div>
         </div>
 
         <!-- الرسوم البيانية -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             
-            <!-- رسم توزيع أنواع الاختبارات -->
-            <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">توزيع أنواع الاختبارات</h3>
-                <p class="text-xs text-gray-500 mb-4">عدد المقررات حسب نوع التقييم</p>
-                <div id="testTypeChart" class="w-full h-72"></div>
+            <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h3 class="text-base md:text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">توزيع أنواع الاختبارات</h3>
+                <p class="text-[10px] md:text-xs text-gray-500 mb-2 md:mb-4">عدد المقررات حسب نوع التقييم</p>
+                <div id="testTypeChart" class="w-full h-60 md:h-72"></div>
             </div>
 
-            <!-- رسم التوزيع الديموغرافي -->
-            <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">التوزيع الديموغرافي للطلاب</h3>
-                <p class="text-xs text-gray-500 mb-4">إجمالي الذكور والإناث في جميع المقررات</p>
-                <div id="genderPieChart" class="w-full h-72"></div>
+            <div class="bg-white dark:bg-gray-800 p-4 md:p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h3 class="text-base md:text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">التوزيع الديموغرافي للطلاب</h3>
+                <p class="text-[10px] md:text-xs text-gray-500 mb-2 md:mb-4">إجمالي الذكور والإناث في جميع المقررات</p>
+                <div id="genderPieChart" class="w-full h-60 md:h-72"></div>
             </div>
 
         </div>
 
-        <!-- الجدول التفصيلي لجميع المقررات -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mt-8">
-            <div class="p-5 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">جدول الشعب التفصيلي لجميع المقررات</h3>
-                        <span id="filteredCountBadge" class="bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-400 text-xs font-bold px-3 py-1 rounded-full transition-all">-- مقرر</span>
+        <!-- الجدول التفصيلي -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div class="p-4 md:p-5 border-b border-gray-200 dark:border-gray-700 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div class="w-full lg:w-auto">
+                    <div class="flex items-center justify-between lg:justify-start gap-2 mb-1">
+                        <h3 class="text-base md:text-lg font-bold text-gray-800 dark:text-gray-100">جدول الشعب التفصيلي</h3>
+                        <span id="filteredCountBadge" class="bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-400 text-[10px] md:text-xs font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-full transition-all">-- مقرر</span>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">يُعرض تصنيف المقررات، أعداد الشعب حسب الجنس، وأنواع الاختبارات (محوسب/ورقي/عملي)</p>
+                    <p class="text-[10px] md:text-xs text-gray-500">يُعرض تصنيف المقررات، أعداد الشعب وأنواع الاختبارات</p>
                 </div>
-                <!-- أدوات الفلترة والبحث -->
-                <div class="flex flex-col sm:flex-row w-full md:w-auto gap-3">
-                    <select id="typeFilterTable" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white outline-none cursor-pointer">
+                
+                <!-- أدوات الفلترة والبحث (متجاوبة تماماً للجوال) -->
+                <div class="flex flex-col sm:flex-row w-full lg:w-auto gap-2 md:gap-3">
+                    <select id="typeFilterTable" class="w-full sm:w-auto bg-gray-50 border border-gray-300 text-gray-900 text-xs md:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white outline-none cursor-pointer">
                         <option value="all">جميع أنواع الاختبارات</option>
                         <option value="محوسب">محوسب فقط (18 مقرر)</option>
                         <option value="ورقي">ورقي فقط</option>
@@ -179,30 +183,30 @@
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </div>
-                        <input type="text" id="searchDetailedTable" class="block w-full p-2 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white outline-none" placeholder="ابحث برمز أو اسم المقرر...">
+                        <input type="text" id="searchDetailedTable" class="block w-full p-2.5 pr-9 text-xs md:text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white outline-none" placeholder="ابحث برمز أو اسم المقرر...">
                     </div>
                 </div>
             </div>
             
-            <div class="overflow-x-auto max-h-[500px]">
-                <table class="w-full text-sm text-right text-gray-500 dark:text-gray-400 relative">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700/80 dark:text-gray-300 sticky top-0 shadow-sm z-10">
+            <div class="overflow-x-auto max-h-[400px] md:max-h-[500px]">
+                <table class="w-full text-right text-gray-500 dark:text-gray-400 relative">
+                    <thead class="text-[10px] md:text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700/80 dark:text-gray-300 sticky top-0 shadow-sm z-10">
                         <tr>
-                            <th scope="col" class="px-4 py-4 whitespace-nowrap">رمز المقرر</th>
-                            <th scope="col" class="px-4 py-4 min-w-[200px]">اسم المقرر</th>
-                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-blue-600 dark:text-blue-400">شعب ذكور</th>
-                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-pink-600 dark:text-pink-400">شعب إناث</th>
-                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap bg-gray-100 dark:bg-gray-800">إجمالي الشعب</th>
-                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-blue-600 dark:text-blue-400">طلاب ذكور</th>
-                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-pink-600 dark:text-pink-400">طالبات إناث</th>
-                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap bg-gray-100 dark:bg-gray-800">إجمالي الطلاب</th>
-                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap">نوع الاختبار</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 whitespace-nowrap">الرمز</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 min-w-[140px] md:min-w-[200px]">اسم المقرر</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 text-center whitespace-nowrap text-blue-600 dark:text-blue-400">شعب ذكور</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 text-center whitespace-nowrap text-pink-600 dark:text-pink-400">شعب إناث</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 text-center whitespace-nowrap bg-gray-100 dark:bg-gray-800">شعب كلي</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 text-center whitespace-nowrap text-blue-600 dark:text-blue-400">طلاب ذكور</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 text-center whitespace-nowrap text-pink-600 dark:text-pink-400">طالبات إناث</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 text-center whitespace-nowrap bg-gray-100 dark:bg-gray-800">إجمالي طلاب</th>
+                            <th scope="col" class="px-2 py-2 md:px-4 md:py-4 text-center whitespace-nowrap">نوع الاختبار</th>
                         </tr>
                     </thead>
                     <tbody id="detailedTableBody">
                     </tbody>
                 </table>
-                <div id="noResultsMsg" class="hidden p-8 text-center text-gray-500 dark:text-gray-400">
+                <div id="noResultsMsg" class="hidden p-8 text-center text-sm md:text-base text-gray-500 dark:text-gray-400">
                     لا توجد مقررات مطابقة لبحثك.
                 </div>
             </div>
@@ -212,7 +216,7 @@
 
     <!-- الكود البرمجي (JavaScript) -->
     <script>
-        // 1. البيانات الأصلية (المرفقة في الاستعلام) مضمنة كمتغير نصي
+        // البيانات الأصلية
         const rawCSVData = `المقررات	الشعبة	جنس الشعبة	عدد المسجلين
 PENG001 - اللغة الانجليزية تحضيري 1	1201	اناث	38
 PCOS001 - مهارات الحاسب	1204	اناث	46
@@ -381,10 +385,10 @@ PHRM304 - علم الادوية 2	4239	ذكور	31
 NURS332 - تمريض الامومة عملي	42401	ذكور	47
 NURS313 - تمريض عناية بالغين متقدم نظري	4244	ذكور	46
 PHRM304 - علم الادوية 2	4245	ذكور	44
-NURS312 - تمريض عناية بالغين أساسي عملي	52011	اناث	37
+NURS312 - تمريض عناية بالغين أساس عملي	52011	اناث	37
 NURS322 - تمريض الصحة العقلية عملي	52051	اناث	52
-NURS312 - تمريض عناية بالغين أساسي عملي	52101	اناث	53
-NURS312 - تمريض عناية بالغين أساسي عملي	52071	ذكور	26
+NURS312 - تمريض عناية بالغين أساس عملي	52101	اناث	53
+NURS312 - تمريض عناية بالغين أساس عملي	52071	ذكور	26
 NURS321 - تمريض الصحة العقلية نظري	5214	ذكور	19
 NURS314 - تمريض عناية بالغين متقدم عملي	62011	اناث	52
 NURS313 - تمريض عناية بالغين متقدم نظري	6204	اناث	44
@@ -556,7 +560,7 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
         let detailedCoursesData = [];
         let globalStats = { students: 0, courses: 0, sections: 0, maleSec: 0, femaleSec: 0, maleStu: 0, femaleStu: 0 };
         
-        // 2. قائمة المقررات المحوسبة المعتمدة من قبلك (18 مقرر)
+        // قائمة المحوسب
         const computerBasedCourses = ['BIOL281', 'PMDC101', 'PENG002', 'NURS321', 'NURS311', 'PHRM214', 'PHYL281', 'ARAB102', 'ARAB101', 'CHEM203', 'NURS211', 'PENG001', 'MGT181', 'PCSK001', 'IC102', 'IC101', 'PCOS001', 'NURS441'];
 
         let isDarkMode = false;
@@ -574,9 +578,6 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
         const searchInput = document.getElementById('searchDetailedTable');
         const typeFilterTable = document.getElementById('typeFilterTable');
 
-        /* =========================================
-           3. معالجة البيانات النصية آلياً
-           ========================================= */
         function processRawData() {
             const lines = rawCSVData.trim().split('\n');
             const aggregated = {};
@@ -602,7 +603,6 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
                     let type = 'ورقي';
                     let typeClass = 'bg-red-100 text-red-800 border-red-200';
                     
-                    // تصنيف العملي، يشمل مقرر 444 (مشروع بحث)
                     if (name.includes('عملي') || code === 'NURS444') {
                         type = 'عملي';
                         typeClass = 'bg-orange-100 text-orange-800 border-orange-200';
@@ -645,9 +645,6 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
             renderDetailedTable();
         }
 
-        /* =========================================
-           4. تحديث واجهة المستخدم والرسوم
-           ========================================= */
         function animateValue(obj, start, end, duration) {
             let startTimestamp = null;
             const step = (timestamp) => {
@@ -715,7 +712,7 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
             charts.testType.setOption({
                 backgroundColor: 'transparent',
                 tooltip: { trigger: 'axis', textStyle: { fontFamily } },
-                grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+                grid: { left: '3%', right: '4%', bottom: '10%', top: '10%', containLabel: true },
                 xAxis: { 
                     type: 'category', data: ['محوسب', 'ورقي', 'عملي'],
                     axisLabel: { color: c.text, fontFamily }, axisLine: { lineStyle: { color: c.grid } }
@@ -736,10 +733,10 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
                 tooltip: { trigger: 'item', formatter: '{b}: {c} طالب ({d}%)', textStyle: { fontFamily } },
                 legend: { bottom: '0', textStyle: { color: c.text, fontFamily } },
                 series: [{
-                    name: 'النوع', type: 'pie', radius: ['45%', '75%'], avoidLabelOverlap: false,
+                    name: 'النوع', type: 'pie', radius: ['40%', '70%'], avoidLabelOverlap: false,
                     itemStyle: { borderRadius: 10, borderColor: isDarkMode ? '#1f2937' : '#fff', borderWidth: 2 },
                     label: { show: false, position: 'center' },
-                    emphasis: { label: { show: true, fontSize: 20, fontWeight: 'bold', fontFamily, color: c.text } },
+                    emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold', fontFamily, color: c.text } },
                     labelLine: { show: false }, 
                     data: [
                         { value: globalStats.maleStu, name: 'ذكور', itemStyle: {color: colors.blue} }, 
@@ -785,16 +782,16 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
                     const tr = document.createElement('tr');
                     tr.className = 'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
                     tr.innerHTML = `
-                        <td class="px-4 py-3 font-bold text-gray-900 dark:text-white">${row.code}</td>
-                        <td class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">${row.name}</td>
-                        <td class="px-4 py-3 text-center text-blue-600 dark:text-blue-400 font-bold">${row.maleSec}</td>
-                        <td class="px-4 py-3 text-center text-pink-600 dark:text-pink-400 font-bold">${row.femaleSec}</td>
-                        <td class="px-4 py-3 text-center bg-gray-50 dark:bg-gray-900/50 font-black text-gray-800 dark:text-gray-100">${row.totalSec}</td>
-                        <td class="px-4 py-3 text-center text-blue-600 dark:text-blue-400">${row.maleStu}</td>
-                        <td class="px-4 py-3 text-center text-pink-600 dark:text-pink-400">${row.femaleStu}</td>
-                        <td class="px-4 py-3 text-center bg-gray-50 dark:bg-gray-900/50 font-black text-gray-800 dark:text-gray-100">${row.totalStu}</td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="px-3 py-1 rounded-full text-[11px] font-bold inline-block whitespace-nowrap ${row.typeClass}">${row.type}</span>
+                        <td class="px-2 py-2 md:px-4 md:py-3 font-bold text-gray-900 dark:text-white text-xs md:text-sm">${row.code}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 font-semibold text-gray-700 dark:text-gray-200 text-xs md:text-sm min-w-[150px] md:min-w-[200px]">${row.name}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center text-blue-600 dark:text-blue-400 font-bold text-xs md:text-sm">${row.maleSec}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center text-pink-600 dark:text-pink-400 font-bold text-xs md:text-sm">${row.femaleSec}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center bg-gray-50 dark:bg-gray-900/50 font-black text-gray-800 dark:text-gray-100 text-xs md:text-sm">${row.totalSec}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center text-blue-600 dark:text-blue-400 text-xs md:text-sm">${row.maleStu}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center text-pink-600 dark:text-pink-400 text-xs md:text-sm">${row.femaleStu}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center bg-gray-50 dark:bg-gray-900/50 font-black text-gray-800 dark:text-gray-100 text-xs md:text-sm">${row.totalStu}</td>
+                        <td class="px-2 py-2 md:px-4 md:py-3 text-center">
+                            <span class="px-2 py-1 md:px-3 md:py-1 rounded-full text-[10px] md:text-[11px] font-bold inline-block whitespace-nowrap ${row.typeClass}">${row.type}</span>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -808,7 +805,7 @@ NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             initCharts();
-            processRawData(); // يتم تشغيل تحليل البيانات فور فتح الصفحة
+            processRawData(); 
         });
 
     </script>
