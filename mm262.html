@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة مؤشرات الأداء الأكاديمي | الكلية</title>
+    
+    <!-- خطوط جوجل (Cairo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- إعدادات Tailwind -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
+                    colors: {
+                        primary: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Apache ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+    <style>
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .kpi-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .kpi-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
+
+    <!-- شريط التنقل العلوي -->
+    <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary-100 dark:bg-primary-900/30 p-2 rounded-lg text-primary-600 dark:text-primary-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg md:text-xl leading-tight">لوحة مؤشرات الأداء</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">نظام دعم اتخاذ القرار الأكاديمي</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 md:gap-4">
+                    <button id="themeToggle" title="تبديل المظهر" class="p-2 text-gray-500 hover:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-400 rounded-lg transition-colors">
+                        <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        
+        <!-- بطاقات المؤشرات (KPIs) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">إجمالي الطلاب المسجلين</p>
+                        <h3 id="kpi-students" class="text-3xl font-bold text-gray-800 dark:text-white">--</h3>
+                    </div>
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-green-500 font-bold flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        الرقم الفعلي من البيانات
+                    </span>
+                </div>
+            </div>
+
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">إجمالي المقررات (الفريدة)</p>
+                        <h3 id="kpi-courses" class="text-3xl font-bold text-gray-800 dark:text-white">--</h3>
+                    </div>
+                    <div class="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">بإجمالي <span id="kpi-sections" class="font-bold text-gray-800 dark:text-gray-200">--</span> شعبة مفعلة</span>
+                </div>
+            </div>
+
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">شعب الذكور</p>
+                        <h3 id="kpi-male-sec" class="text-3xl font-bold text-blue-600 dark:text-blue-400">--</h3>
+                    </div>
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">تستوعب <span id="kpi-male-stu" class="font-bold text-gray-800 dark:text-gray-200">--</span> طالب</span>
+                </div>
+            </div>
+
+            <div class="kpi-card bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mb-1">شعب الإناث</p>
+                        <h3 id="kpi-female-sec" class="text-3xl font-bold text-pink-600 dark:text-pink-400">--</h3>
+                    </div>
+                    <div class="p-3 bg-pink-50 dark:bg-pink-900/30 rounded-lg text-pink-600 dark:text-pink-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">تستوعب <span id="kpi-female-stu" class="font-bold text-gray-800 dark:text-gray-200">--</span> طالبة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- الرسوم البيانية -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- رسم توزيع أنواع الاختبارات -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">توزيع أنواع الاختبارات</h3>
+                <p class="text-xs text-gray-500 mb-4">عدد المقررات حسب نوع التقييم</p>
+                <div id="testTypeChart" class="w-full h-72"></div>
+            </div>
+
+            <!-- رسم التوزيع الديموغرافي -->
+            <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">التوزيع الديموغرافي للطلاب</h3>
+                <p class="text-xs text-gray-500 mb-4">إجمالي الذكور والإناث في جميع المقررات</p>
+                <div id="genderPieChart" class="w-full h-72"></div>
+            </div>
+
+        </div>
+
+        <!-- الجدول التفصيلي لجميع المقررات -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mt-8">
+            <div class="p-5 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">جدول الشعب التفصيلي لجميع المقررات</h3>
+                        <span id="filteredCountBadge" class="bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-400 text-xs font-bold px-3 py-1 rounded-full transition-all">-- مقرر</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">يُعرض تصنيف المقررات، أعداد الشعب حسب الجنس، وأنواع الاختبارات (محوسب/ورقي/عملي)</p>
+                </div>
+                <!-- أدوات الفلترة والبحث -->
+                <div class="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+                    <select id="typeFilterTable" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white outline-none cursor-pointer">
+                        <option value="all">جميع أنواع الاختبارات</option>
+                        <option value="محوسب">محوسب فقط (18 مقرر)</option>
+                        <option value="ورقي">ورقي فقط</option>
+                        <option value="عملي">عملي (بجميع أنواعه)</option>
+                    </select>
+                    
+                    <div class="relative w-full sm:w-64">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="searchDetailedTable" class="block w-full p-2 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white outline-none" placeholder="ابحث برمز أو اسم المقرر...">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto max-h-[500px]">
+                <table class="w-full text-sm text-right text-gray-500 dark:text-gray-400 relative">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700/80 dark:text-gray-300 sticky top-0 shadow-sm z-10">
+                        <tr>
+                            <th scope="col" class="px-4 py-4 whitespace-nowrap">رمز المقرر</th>
+                            <th scope="col" class="px-4 py-4 min-w-[200px]">اسم المقرر</th>
+                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-blue-600 dark:text-blue-400">شعب ذكور</th>
+                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-pink-600 dark:text-pink-400">شعب إناث</th>
+                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap bg-gray-100 dark:bg-gray-800">إجمالي الشعب</th>
+                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-blue-600 dark:text-blue-400">طلاب ذكور</th>
+                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap text-pink-600 dark:text-pink-400">طالبات إناث</th>
+                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap bg-gray-100 dark:bg-gray-800">إجمالي الطلاب</th>
+                            <th scope="col" class="px-4 py-4 text-center whitespace-nowrap">نوع الاختبار</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailedTableBody">
+                    </tbody>
+                </table>
+                <div id="noResultsMsg" class="hidden p-8 text-center text-gray-500 dark:text-gray-400">
+                    لا توجد مقررات مطابقة لبحثك.
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- الكود البرمجي (JavaScript) -->
+    <script>
+        // 1. البيانات الأصلية (المرفقة في الاستعلام) مضمنة كمتغير نصي
+        const rawCSVData = `المقررات	الشعبة	جنس الشعبة	عدد المسجلين
+PENG001 - اللغة الانجليزية تحضيري 1	1201	اناث	38
+PCOS001 - مهارات الحاسب	1204	اناث	46
+PCSK001 - مهارات الاتصال	1205	اناث	61
+PENG001 - اللغة الانجليزية تحضيري 1	1211	ذكور	21
+PENG002 - اللغة الانجليزية تحضيري 2	1212	ذكور	25
+PHYS121 - فيزياء طبية	2203	اناث	52
+PBIO121 - احياء طبية	2204	اناث	53
+PCHM121 - كيمياء طبية	2205	اناث	53
+PHYS121 - فيزياء طبية	2208	اناث	47
+PBIO121 - احياء طبية	2252	اناث	47
+PCHM121 - كيمياء طبية	2209	اناث	46
+PENG003 - اللغة الانجليزية تحضيري 3	2210	اناث	48
+PENG008 - اللغة الانجليزية تحضيري 4	2211	اناث	49
+PCHM121 - كيمياء طبية	2214	اناث	46
+PENG008 - اللغة الانجليزية تحضيري 4	2216	اناث	48
+PBIO121 - احياء طبية	2218	اناث	49
+PENG008 - اللغة الانجليزية تحضيري 4	2231	اناث	46
+PBIO121 - احياء طبية	2233	اناث	46
+PCHM121 - كيمياء طبية	2239	ذكور	51
+PHYS121 - فيزياء طبية	2242	ذكور	50
+PBIO121 - احياء طبية	2243	ذكور	47
+PENG003 - اللغة الانجليزية تحضيري 3	2245	ذكور	51
+PENG008 - اللغة الانجليزية تحضيري 4	2246	ذكور	30
+PENG003 - اللغة الانجليزية تحضيري 3	2250	ذكور	45
+NURS211 - اساسيات التمريض 1 نظري	3201	اناث	50
+PHYL281 - علم وظائف الاعضاء	3202	اناث	45
+CHEM203 - الكيمياء الحيوية	3204	اناث	23
+ARAB101 - مهارات اللغة العربية	3205	اناث	36
+NURS211 - اساسيات التمريض 1 نظري	3211	اناث	50
+PHYL281 - علم وظائف الاعضاء	3212	اناث	40
+ANT205 - علم التشريح	3213	اناث	36
+NURS211 - اساسيات التمريض 1 نظري	3216	اناث	27
+CHEM203 - الكيمياء الحيوية	3219	اناث	22
+NURS211 - اساسيات التمريض 1 نظري	3206	ذكور	24
+PHYL281 - علم وظائف الاعضاء	3207	ذكور	30
+CHEM203 - الكيمياء الحيوية	3209	ذكور	13
+ARAB101 - مهارات اللغة العربية	3210	ذكور	45
+NURS211 - اساسيات التمريض 1 نظري	3221	ذكور	34
+CHEM203 - الكيمياء الحيوية	3224	ذكور	46
+ARAB101 - مهارات اللغة العربية	3225	ذكور	31
+NURS214 - اساسيات التمريض 2 عملي	42461	اناث	49
+IC101 - مدخل الى الثقافة الاسلامية	4250	اناث	50
+NURS213 - اساسيات التمريض 2 نظري	4213	ذكور	49
+NURS214 - اساسيات التمريض 2 عملي	42131	ذكور	44
+BIOL281 - علم الأحياء الدقيقه	4214	ذكور	28
+IC101 - مدخل الى الثقافة الاسلامية	4217	ذكور	52
+NURS313 - تمريض عناية بالغين متقدم نظري	4219	اناث	46
+NURS331 - تمريض الامومة نظري	4220	اناث	43
+PHRM304 - علم الادوية 2	4221	اناث	46
+NURS314 - تمريض عناية بالغين متقدم عملي	42221	اناث	43
+NURS331 - تمريض الامومة نظري	4225	اناث	40
+NURS313 - تمريض عناية بالغين متقدم نظري	4226	اناث	53
+NURS314 - تمريض عناية بالغين متقدم عملي	42291	اناث	26
+NURS332 - تمريض الامومة عملي	42311	اناث	45
+NURS313 - تمريض عناية بالغين متقدم نظري	4234	ذكور	54
+NURS331 - تمريض الامومة نظري	4235	ذكور	45
+PHRM304 - علم الادوية 2	4236	ذكور	45
+NURS314 - تمريض عناية بالغين متقدم عملي	42371	ذكور	20
+NURS331 - تمريض الامومة نظري	4240	ذكور	54
+NURS313 - تمريض عناية بالغين متقدم نظري	4241	ذكور	48
+NURS314 - تمريض عناية بالغين متقدم عملي	42441	ذكور	50
+NURS311 - تمريض عناية بالغين أساسي نظري	5201	اناث	52
+NURS321 - تمريض الصحة العقلية نظري	5202	اناث	48
+PHRM304 - علم الادوية 2	5203	اناث	21
+NURS312 - تمريض عناية بالغين أساسي عملي	52041	اناث	22
+NURS311 - تمريض عناية بالغين أساسي نظري	5210	اناث	23
+NURS311 - تمريض عناية بالغين أساسي نظري	5207	ذكور	35
+NURS321 - تمريض الصحة العقلية نظري	5208	ذكور	30
+PHRM304 - علم الادوية 2	5209	ذكور	12
+NURS312 - تمريض عناية بالغين أساسي عملي	52131	ذكور	22
+NURS313 - تمريض عناية بالغين متقدم نظري	6201	اناث	50
+NURS331 - تمريض الامومة نظري	6202	اناث	33
+ARAB102 - التحرير العربي	6203	اناث	50
+NURS314 - تمريض عناية بالغين متقدم عملي	62041	اناث	47
+NURS313 - تمريض عناية بالغين متقدم نظري	6207	اناث	47
+NURS331 - تمريض الامومة نظري	6208	اناث	23
+NURS332 - تمريض الامومة عملي	62111	اناث	15
+NURS314 - تمريض عناية بالغين متقدم عملي	62131	اناث	53
+NURS313 - تمريض عناية بالغين متقدم نظري	6216	ذكور	49
+NURS331 - تمريض الامومة نظري	6217	ذكور	28
+ARAB102 - التحرير العربي	6218	ذكور	40
+NURS331 - تمريض الامومة نظري	6220	ذكور	19
+NURS314 - تمريض عناية بالغين متقدم عملي	62221	ذكور	31
+NURS431 - تمريض الأطفال نظري	7201	اناث	45
+NURS441 - ادارة   التمريض نظري	7202	اناث	29
+MGT181 - إدارة الجودة الشاملة	7204	اناث	25
+NURS431 - تمريض الأطفال نظري	7205	اناث	55
+NURS441 - ادارة   التمريض نظري	7206	اناث	28
+NURS442 - ادارة  التمريض عملي	72141	اناث	46
+NURS431 - تمريض الأطفال نظري	7209	ذكور	47
+NURS441 - ادارة   التمريض نظري	7210	ذكور	47
+NURS441 - ادارة   التمريض نظري	7218	ذكور	16
+MGT181 - إدارة الجودة الشاملة	7220	ذكور	35
+NURS421 - تمريض صحة المجتمع نظري	8201	اناث	48
+NURS411 - تمريض الحالات الحرجة نظري	8202	اناث	55
+NURS444 - مشروع بحث	8203	اناث	53
+NURS443 - مبادئ البحث العلمي في التمريض	8204	اناث	53
+NURS421 - تمريض صحة المجتمع نظري	8205	اناث	56
+NURS411 - تمريض الحالات الحرجة نظري	8206	اناث	43
+NURS421 - تمريض صحة المجتمع نظري	8209	اناث	44
+NURS411 - تمريض الحالات الحرجة نظري	8210	اناث	51
+NURS422 - تمريض صحة المجتمع عملي	82131	اناث	39
+NURS411 - تمريض الحالات الحرجة نظري	8214	اناث	37
+NURS421 - تمريض صحة المجتمع نظري	8217	اناث	54
+NURS411 - تمريض الحالات الحرجة نظري	8218	اناث	53
+NURS412 - تمريض الحالات الحرجة عملي	82221	ذكور	32
+NURS422 - تمريض صحة المجتمع عملي	82291	ذكور	9
+NURS421 - تمريض صحة المجتمع نظري	8233	ذكور	51
+NURS411 - تمريض الحالات الحرجة نظري	8234	ذكور	58
+NURS432 - تمريض الأطفال عملي	72221	اناث	53
+NURS211 - اساسيات التمريض 1 نظري	3226	اناث	17
+PAT213 - علم الامراض	4254	اناث	29
+PHRM214 - علم الادوية 1	4255	اناث	35
+ENGL110 - مهارات الكتابة باللغة الانجليزية	4256	اناث	33
+NURS214 - اساسيات التمريض 2 عملي	42571	ذكور	18
+NURS411 - تمريض الحالات الحرجة نظري	8243	ذكور	20
+PENG008 - اللغة الانجليزية تحضيري 4	2202	اناث	49
+PENG003 - اللغة الانجليزية تحضيري 3	2220	اناث	51
+PENG008 - اللغة الانجليزية تحضيري 4	2221	اناث	50
+PCHM121 - كيمياء طبية	2224	اناث	49
+PENG003 - اللغة الانجليزية تحضيري 3	2225	اناث	49
+PENG008 - اللغة الانجليزية تحضيري 4	2226	اناث	49
+PENG003 - اللغة الانجليزية تحضيري 3	2230	اناث	48
+PHYS121 - فيزياء طبية	2232	اناث	50
+PENG003 - اللغة الانجليزية تحضيري 3	2235	ذكور	47
+PENG008 - اللغة الانجليزية تحضيري 4	2236	ذكور	46
+PENG003 - اللغة الانجليزية تحضيري 3	2240	ذكور	30
+PENG008 - اللغة الانجليزية تحضيري 4	2241	ذكور	48
+PCHM121 - كيمياء طبية	2244	ذكور	47
+PHYS121 - فيزياء طبية	2247	ذكور	27
+PBIO121 - احياء طبية	2248	ذكور	26
+PENG008 - اللغة الانجليزية تحضيري 4	2251	ذكور	47
+PHYS121 - فيزياء طبية	2253	ذكور	15
+PCHM121 - كيمياء طبية	2255	ذكور	11
+PENG008 - اللغة الانجليزية تحضيري 4	2257	ذكور	44
+NURS212 - اساسيات التمريض 1 عملي	32011	اناث	50
+ANT205 - علم التشريح	3203	اناث	32
+NURS212 - اساسيات التمريض 1 عملي	32111	اناث	44
+CHEM203 - الكيمياء الحيوية	3214	اناث	30
+NURS212 - اساسيات التمريض 1 عملي	32161	اناث	26
+ANT205 - علم التشريح	3218	اناث	19
+NURS212 - اساسيات التمريض 1 عملي	32061	ذكور	27
+ANT205 - علم التشريح	3208	ذكور	49
+PHYL281 - علم وظائف الاعضاء	3222	ذكور	47
+ENGL110 - مهارات الكتابة باللغة الانجليزية	4205	اناث	45
+PAT213 - علم الامراض	4203	اناث	50
+IC101 - مدخل الى الثقافة الاسلامية	4204	اناث	54
+NURS214 - اساسيات التمريض 2 عملي	42071	اناث	54
+PHRM214 - علم الادوية 1	4212	اناث	45
+BIOL281 - علم الأحياء الدقيقه	4247	اناث	31
+ENGL110 - مهارات الكتابة باللغة الانجليزية	4215	ذكور	44
+PAT213 - علم الامراض	4216	ذكور	42
+NURS314 - تمريض عناية بالغين متقدم عملي	42191	اناث	43
+NURS313 - تمريض عناية بالغين متقدم نظري	4222	اناث	36
+NURS331 - تمريض الامومة نظري	4223	اناث	35
+PHRM304 - علم الادوية 2	4224	اناث	36
+NURS332 - تمريض الامومة عملي	42251	اناث	28
+NURS331 - تمريض الامومة نظري	4228	اناث	29
+NURS313 - تمريض عناية بالغين متقدم نظري	4229	اناث	49
+NURS314 - تمريض عناية بالغين متقدم عملي	42321	اناث	46
+NURS314 - تمريض عناية بالغين متقدم عملي	42341	ذكور	49
+NURS313 - تمريض عناية بالغين متقدم نظري	4237	ذكور	20
+NURS331 - تمريض الامومة نظري	4238	ذكور	14
+PHRM304 - علم الادوية 2	4239	ذكور	31
+NURS332 - تمريض الامومة عملي	42401	ذكور	47
+NURS313 - تمريض عناية بالغين متقدم نظري	4244	ذكور	46
+PHRM304 - علم الادوية 2	4245	ذكور	44
+NURS312 - تمريض عناية بالغين أساسي عملي	52011	اناث	37
+NURS322 - تمريض الصحة العقلية عملي	52051	اناث	52
+NURS312 - تمريض عناية بالغين أساسي عملي	52101	اناث	53
+NURS312 - تمريض عناية بالغين أساسي عملي	52071	ذكور	26
+NURS321 - تمريض الصحة العقلية نظري	5214	ذكور	19
+NURS314 - تمريض عناية بالغين متقدم عملي	62011	اناث	52
+NURS313 - تمريض عناية بالغين متقدم نظري	6204	اناث	44
+NURS214 - اساسيات التمريض 2 عملي	42011	اناث	52
+NURS331 - تمريض الامومة نظري	6205	اناث	36
+ARAB102 - التحرير العربي	6206	اناث	29
+NURS314 - تمريض عناية بالغين متقدم عملي	62071	اناث	55
+NURS314 - تمريض عناية بالغين متقدم عملي	62101	اناث	13
+NURS313 - تمريض عناية بالغين متقدم نظري	6213	اناث	45
+NURS331 - تمريض الامومة نظري	6214	اناث	47
+NURS332 - تمريض الامومة عملي	62171	ذكور	38
+NURS314 - تمريض عناية بالغين متقدم عملي	62191	ذكور	12
+ARAB102 - التحرير العربي	6221	ذكور	22
+NURS313 - تمريض عناية بالغين متقدم نظري	6222	ذكور	22
+NURS331 - تمريض الامومة نظري	6223	ذكور	29
+NURS432 - تمريض الأطفال عملي	72011	اناث	51
+NURS442 - ادارة  التمريض عملي	72061	اناث	29
+NURS441 - ادارة   التمريض نظري	7214	اناث	51
+NURS431 - تمريض الأطفال نظري	7217	ذكور	41
+NURS412 - تمريض الحالات الحرجة عملي	82021	اناث	46
+NURS422 - تمريض صحة المجتمع عملي	82051	اناث	38
+NURS444 - مشروع بحث	8211	اناث	51
+NURS443 - مبادئ البحث العلمي في التمريض	8212	اناث	51
+NURS421 - تمريض صحة المجتمع نظري	8213	اناث	13
+NURS444 - مشروع بحث	8215	اناث	53
+NURS443 - مبادئ البحث العلمي في التمريض	8216	اناث	51
+NURS422 - تمريض صحة المجتمع عملي	82171	اناث	43
+NURS422 - تمريض صحة المجتمع عملي	82251	ذكور	38
+NURS421 - تمريض صحة المجتمع نظري	8229	ذكور	25
+NURS411 - تمريض الحالات الحرجة نظري	8230	ذكور	45
+NURS444 - مشروع بحث	8231	ذكور	27
+NURS443 - مبادئ البحث العلمي في التمريض	8232	ذكور	21
+NURS444 - مشروع بحث	8235	ذكور	45
+NURS443 - مبادئ البحث العلمي في التمريض	8236	ذكور	50
+NURS212 - اساسيات التمريض 1 عملي	32261	اناث	18
+NURS214 - اساسيات التمريض 2 عملي	42521	اناث	47
+NURS213 - اساسيات التمريض 2 نظري	4257	ذكور	24
+PMDC101 - مبادى الكليات الصحية	1203	اناث	54
+PMDC101 - مبادى الكليات الصحية	1213	ذكور	46
+PCOS001 - مهارات الحاسب	1214	ذكور	23
+PCSK001 - مهارات الاتصال	1215	ذكور	51
+PENG003 - اللغة الانجليزية تحضيري 3	2201	اناث	51
+PENG003 - اللغة الانجليزية تحضيري 3	2206	اناث	50
+PENG008 - اللغة الانجليزية تحضيري 4	2207	اناث	54
+PENG003 - اللغة الانجليزية تحضيري 3	2215	اناث	46
+PHYS121 - فيزياء طبية	2217	اناث	46
+PCHM121 - كيمياء طبية	2219	اناث	25
+PHYS121 - فيزياء طبية	2222	اناث	30
+PBIO121 - احياء طبية	2223	اناث	49
+PHYS121 - فيزياء طبية	2227	اناث	46
+PBIO121 - احياء طبية	2228	اناث	35
+PCHM121 - كيمياء طبية	2234	اناث	46
+PBIO121 - احياء طبية	2238	ذكور	54
+PENG003 - اللغة الانجليزية تحضيري 3	2256	ذكور	45
+PBIO121 - احياء طبية	2259	ذكور	46
+PCHM121 - كيمياء طبية	2260	ذكور	38
+ARAB101 - مهارات اللغة العربية	3215	اناث	29
+PHYL281 - علم وظائف الاعضاء	3217	اناث	31
+NURS212 - اساسيات التمريض 1 عملي	32211	ذكور	20
+NURS213 - اساسيات التمريض 2 نظري	4201	اناث	51
+BIOL281 - علم الأحياء الدقيقه	4202	اناث	36
+PHRM214 - علم الادوية 1	4206	اناث	53
+NURS213 - اساسيات التمريض 2 نظري	4207	اناث	50
+BIOL281 - علم الأحياء الدقيقه	4208	اناث	47
+PAT213 - علم الامراض	4210	اناث	46
+NURS213 - اساسيات التمريض 2 نظري	4246	اناث	54
+ENGL110 - مهارات الكتابة باللغة الانجليزية	4248	اناث	37
+PHRM214 - علم الادوية 1	4218	ذكور	34
+NURS332 - تمريض الامومة عملي	42231	اناث	42
+PHRM304 - علم الادوية 2	4227	اناث	45
+NURS331 - تمريض الامومة نظري	4231	اناث	45
+PHRM304 - علم الادوية 2	4233	اناث	31
+PHRM304 - علم الادوية 2	4242	ذكور	25
+NURS311 - تمريض عناية بالغين أساسي نظري	5204	اناث	41
+NURS321 - تمريض الصحة العقلية نظري	5205	اناث	51
+NURS322 - تمريض الصحة العقلية عملي	52141	ذكور	17
+NURS332 - تمريض الامومة عملي	62051	اناث	25
+NURS313 - تمريض عناية بالغين متقدم نظري	6210	اناث	29
+NURS331 - تمريض الامومة نظري	6211	اناث	17
+ARAB102 - التحرير العربي	6209	اناث	30
+ARAB102 - التحرير العربي	6224	ذكور	28
+MGT181 - إدارة الجودة الشاملة	7208	اناث	22
+NURS432 - تمريض الأطفال عملي	72131	اناث	50
+IC102 - الاسلام وبناء المجتمع	7211	ذكور	43
+MGT181 - إدارة الجودة الشاملة	7212	ذكور	32
+NURS444 - مشروع بحث	8207	اناث	51
+NURS443 - مبادئ البحث العلمي في التمريض	8208	اناث	51
+NURS412 - تمريض الحالات الحرجة عملي	82181	اناث	47
+NURS421 - تمريض صحة المجتمع نظري	8221	ذكور	24
+NURS411 - تمريض الحالات الحرجة نظري	8222	ذكور	23
+NURS421 - تمريض صحة المجتمع نظري	8225	ذكور	11
+NURS411 - تمريض الحالات الحرجة نظري	8226	ذكور	14
+NURS412 - تمريض الحالات الحرجة عملي	82341	ذكور	57
+NURS431 - تمريض الأطفال نظري	7222	اناث	45
+NURS443 - مبادئ البحث العلمي في التمريض	8239	اناث	52
+NURS444 - مشروع بحث	8240	اناث	52
+NURS213 - اساسيات التمريض 2 نظري	4252	اناث	48
+IC101 - مدخل الى الثقافة الاسلامية	4253	ذكور	44
+ANT205 - علم التشريح	3227	ذكور	43
+NURS443 - مبادئ البحث العلمي في التمريض	8241	اناث	42
+NURS412 - تمريض الحالات الحرجة عملي	82431	ذكور	22
+PENG002 - اللغة الانجليزية تحضيري 2	1202	اناث	43
+PHYS121 - فيزياء طبية	2212	اناث	36
+PBIO121 - احياء طبية	2213	اناث	46
+PCHM121 - كيمياء طبية	2229	اناث	37
+PHYS121 - فيزياء طبية	2237	ذكور	44
+PCHM121 - كيمياء طبية	2249	ذكور	24
+PBIO121 - احياء طبية	2254	ذكور	28
+PHYS121 - فيزياء طبية	2258	ذكور	26
+ANT205 - علم التشريح	3223	ذكور	52
+ENGL110 - مهارات الكتابة باللغة الانجليزية	4209	اناث	39
+PAT213 - علم الامراض	4249	اناث	40
+PHRM214 - علم الادوية 1	4251	اناث	30
+NURS314 - تمريض عناية بالغين متقدم عملي	42261	اناث	54
+PHRM304 - علم الادوية 2	4230	اناث	16
+NURS313 - تمريض عناية بالغين متقدم نظري	4232	اناث	33
+NURS332 - تمريض الامومة عملي	42351	ذكور	50
+NURS314 - تمريض عناية بالغين متقدم عملي	42411	ذكور	51
+NURS331 - تمريض الامومة نظري	4243	ذكور	33
+PHRM304 - علم الادوية 2	5206	اناث	37
+NURS321 - تمريض الصحة العقلية نظري	5211	اناث	19
+PHRM304 - علم الادوية 2	5212	اناث	21
+NURS322 - تمريض الصحة العقلية عملي	52081	ذكور	28
+ARAB102 - التحرير العربي	6212	اناث	22
+NURS314 - تمريض عناية بالغين متقدم عملي	62161	ذكور	21
+NURS332 - تمريض الامومة عملي	62231	ذكور	25
+NURS442 - ادارة  التمريض عملي	72021	اناث	26
+NURS432 - تمريض الأطفال عملي	72051	اناث	26
+NURS431 - تمريض الأطفال نظري	7213	اناث	45
+IC102 - الاسلام وبناء المجتمع	7215	اناث	45
+MGT181 - إدارة الجودة الشاملة	7216	اناث	45
+NURS432 - تمريض الأطفال عملي	72091	ذكور	49
+NURS442 - ادارة  التمريض عملي	72181	ذكور	35
+IC102 - الاسلام وبناء المجتمع	7219	ذكور	29
+NURS422 - تمريض صحة المجتمع عملي	82011	اناث	46
+NURS412 - تمريض الحالات الحرجة عملي	82061	اناث	49
+NURS412 - تمريض الحالات الحرجة عملي	82101	اناث	45
+NURS444 - مشروع بحث	8219	اناث	52
+NURS443 - مبادئ البحث العلمي في التمريض	8220	اناث	54
+NURS422 - تمريض صحة المجتمع عملي	82211	ذكور	17
+NURS412 - تمريض الحالات الحرجة عملي	82261	ذكور	27
+NURS422 - تمريض صحة المجتمع عملي	82331	ذكور	47
+NURS443 - مبادئ البحث العلمي في التمريض	8237	ذكور	41
+NURS444 - مشروع بحث	8238	ذكور	40
+NURS431 - تمريض الأطفال نظري	7221	ذكور	17
+NURS444 - مشروع بحث	8242	اناث	42
+ARAB101 - مهارات اللغة العربية	3220	اناث	41
+IC101 - مدخل الى الثقافة الاسلامية	4211	اناث	55
+NURS332 - تمريض الامومة عملي	42201	اناث	43
+NURS332 - تمريض الامومة عملي	42281	اناث	42
+NURS332 - تمريض الامومة عملي	42431	ذكور	38
+NURS322 - تمريض الصحة العقلية عملي	52021	اناث	45
+NURS322 - تمريض الصحة العقلية عملي	52111	اناث	16
+NURS311 - تمريض عناية بالغين أساسي نظري	5213	ذكور	17
+NURS332 - تمريض الامومة عملي	62021	اناث	45
+ARAB102 - التحرير العربي	6215	اناث	45
+NURS332 - تمريض الامومة عملي	62141	اناث	48
+NURS332 - تمريض الامومة عملي	62201	ذكور	20
+IC102 - الاسلام وبناء المجتمع	7203	اناث	37
+IC102 - الاسلام وبناء المجتمع	7207	اناث	25
+NURS442 - ادارة  التمريض عملي	72101	ذكور	28
+NURS432 - تمريض الأطفال عملي	72171	ذكور	54
+NURS422 - تمريض صحة المجتمع عملي	82091	اناث	44
+NURS412 - تمريض الحالات الحرجة عملي	82141	اناث	52
+NURS444 - مشروع بحث	8223	ذكور	53
+NURS443 - مبادئ البحث العلمي في التمريض	8224	ذكور	53
+NURS412 - تمريض الحالات الحرجة عملي	82301	ذكور	22`;
+
+        let detailedCoursesData = [];
+        let globalStats = { students: 0, courses: 0, sections: 0, maleSec: 0, femaleSec: 0, maleStu: 0, femaleStu: 0 };
+        
+        // 2. قائمة المقررات المحوسبة المعتمدة من قبلك (18 مقرر)
+        const computerBasedCourses = ['BIOL281', 'PMDC101', 'PENG002', 'NURS321', 'NURS311', 'PHRM214', 'PHYL281', 'ARAB102', 'ARAB101', 'CHEM203', 'NURS211', 'PENG001', 'MGT181', 'PCSK001', 'IC102', 'IC101', 'PCOS001', 'NURS441'];
+
+        let isDarkMode = false;
+        let charts = {};
+
+        const colors = {
+            primary: '#3b82f6', emerald: '#10b981', orange: '#f97316', pink: '#db2777', blue: '#2563eb',
+            textLight: '#374151', textDark: '#e5e7eb', gridLight: '#f3f4f6', gridDark: '#374151'
+        };
+
+        const htmlElement = document.documentElement;
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const searchInput = document.getElementById('searchDetailedTable');
+        const typeFilterTable = document.getElementById('typeFilterTable');
+
+        /* =========================================
+           3. معالجة البيانات النصية آلياً
+           ========================================= */
+        function processRawData() {
+            const lines = rawCSVData.trim().split('\n');
+            const aggregated = {};
+            
+            globalStats = { students: 0, courses: 0, sections: 0, maleSec: 0, femaleSec: 0, maleStu: 0, femaleStu: 0 };
+
+            for (let i = 1; i < lines.length; i++) {
+                const rowStr = lines[i].trim();
+                if (!rowStr) continue;
+                
+                const parts = rowStr.split('\t');
+                if(parts.length < 4) continue;
+
+                const courseRaw = parts[0].trim();
+                const gender = parts[2].trim();
+                const enrolled = parseInt(parts[3].trim()) || 0;
+
+                const codeParts = courseRaw.split('-');
+                const code = codeParts[0].trim();
+                const name = codeParts.slice(1).join('-').trim() || courseRaw;
+
+                if (!aggregated[code]) {
+                    let type = 'ورقي';
+                    let typeClass = 'bg-red-100 text-red-800 border-red-200';
+                    
+                    // تصنيف العملي، يشمل مقرر 444 (مشروع بحث)
+                    if (name.includes('عملي') || code === 'NURS444') {
+                        type = 'عملي';
+                        typeClass = 'bg-orange-100 text-orange-800 border-orange-200';
+                    } else if (computerBasedCourses.includes(code)) {
+                        type = 'محوسب';
+                        typeClass = 'bg-green-100 text-green-800 border-green-200';
+                    }
+
+                    aggregated[code] = {
+                        code: code, name: name,
+                        maleSec: 0, femaleSec: 0, totalSec: 0,
+                        maleStu: 0, femaleStu: 0, totalStu: 0,
+                        type: type, typeClass: typeClass
+                    };
+                }
+
+                aggregated[code].totalSec += 1;
+                aggregated[code].totalStu += enrolled;
+                globalStats.sections += 1;
+                globalStats.students += enrolled;
+
+                if (gender === 'ذكور') {
+                    aggregated[code].maleSec += 1;
+                    aggregated[code].maleStu += enrolled;
+                    globalStats.maleSec += 1;
+                    globalStats.maleStu += enrolled;
+                } else if (gender.includes('اناث') || gender.includes('إناث')) {
+                    aggregated[code].femaleSec += 1;
+                    aggregated[code].femaleStu += enrolled;
+                    globalStats.femaleSec += 1;
+                    globalStats.femaleStu += enrolled;
+                }
+            }
+
+            detailedCoursesData = Object.values(aggregated);
+            globalStats.courses = detailedCoursesData.length;
+
+            updateDashboardUI();
+            updateAllCharts();
+            renderDetailedTable();
+        }
+
+        /* =========================================
+           4. تحديث واجهة المستخدم والرسوم
+           ========================================= */
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function updateDashboardUI() {
+            animateValue(document.getElementById('kpi-students'), 0, globalStats.students, 1000);
+            animateValue(document.getElementById('kpi-courses'), 0, globalStats.courses, 1000);
+            animateValue(document.getElementById('kpi-sections'), 0, globalStats.sections, 1000);
+            
+            animateValue(document.getElementById('kpi-male-sec'), 0, globalStats.maleSec, 1000);
+            animateValue(document.getElementById('kpi-male-stu'), 0, globalStats.maleStu, 1000);
+            
+            animateValue(document.getElementById('kpi-female-sec'), 0, globalStats.femaleSec, 1000);
+            animateValue(document.getElementById('kpi-female-stu'), 0, globalStats.femaleStu, 1000);
+        }
+
+        function initTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                isDarkMode = true; htmlElement.classList.add('dark'); sunIcon.classList.remove('hidden'); moonIcon.classList.add('hidden');
+            } else {
+                isDarkMode = false; htmlElement.classList.remove('dark'); sunIcon.classList.add('hidden'); moonIcon.classList.remove('hidden');
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                htmlElement.classList.add('dark'); localStorage.theme = 'dark'; sunIcon.classList.remove('hidden'); moonIcon.classList.add('hidden');
+            } else {
+                htmlElement.classList.remove('dark'); localStorage.theme = 'light'; sunIcon.classList.add('hidden'); moonIcon.classList.remove('hidden');
+            }
+            if(detailedCoursesData.length > 0) updateAllCharts();
+        });
+
+        function getChartColors() {
+            return { text: isDarkMode ? colors.textDark : colors.textLight, grid: isDarkMode ? colors.gridDark : colors.gridLight };
+        }
+
+        function initCharts() {
+            charts.testType = echarts.init(document.getElementById('testTypeChart'));
+            charts.genderPie = echarts.init(document.getElementById('genderPieChart'));
+            window.addEventListener('resize', () => { Object.values(charts).forEach(chart => chart.resize()); });
+        }
+
+        function updateAllCharts() {
+            if (detailedCoursesData.length === 0) return;
+
+            const c = getChartColors();
+            const fontFamily = "'Cairo', sans-serif";
+
+            let comp = 0, paper = 0, prac = 0;
+            detailedCoursesData.forEach(d => {
+                if(d.type === 'محوسب') comp++;
+                else if(d.type === 'عملي') prac++;
+                else paper++;
+            });
+
+            charts.testType.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'axis', textStyle: { fontFamily } },
+                grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+                xAxis: { 
+                    type: 'category', data: ['محوسب', 'ورقي', 'عملي'],
+                    axisLabel: { color: c.text, fontFamily }, axisLine: { lineStyle: { color: c.grid } }
+                },
+                yAxis: { type: 'value', axisLabel: { color: c.text, fontFamily }, splitLine: { lineStyle: { color: c.grid, type: 'dashed' } } },
+                series: [{
+                    name: 'عدد المقررات', type: 'bar', barWidth: '40%', data: [
+                        {value: comp, itemStyle: {color: colors.emerald}},
+                        {value: paper, itemStyle: {color: '#ef4444'}},
+                        {value: prac, itemStyle: {color: colors.orange}}
+                    ],
+                    itemStyle: { borderRadius: [4, 4, 0, 0] }
+                }]
+            });
+
+            charts.genderPie.setOption({
+                backgroundColor: 'transparent',
+                tooltip: { trigger: 'item', formatter: '{b}: {c} طالب ({d}%)', textStyle: { fontFamily } },
+                legend: { bottom: '0', textStyle: { color: c.text, fontFamily } },
+                series: [{
+                    name: 'النوع', type: 'pie', radius: ['45%', '75%'], avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 10, borderColor: isDarkMode ? '#1f2937' : '#fff', borderWidth: 2 },
+                    label: { show: false, position: 'center' },
+                    emphasis: { label: { show: true, fontSize: 20, fontWeight: 'bold', fontFamily, color: c.text } },
+                    labelLine: { show: false }, 
+                    data: [
+                        { value: globalStats.maleStu, name: 'ذكور', itemStyle: {color: colors.blue} }, 
+                        { value: globalStats.femaleStu, name: 'إناث', itemStyle: {color: colors.pink} }
+                    ]
+                }]
+            });
+        }
+
+        function renderDetailedTable(searchTerm = '', typeFilter = 'all') {
+            const tbody = document.getElementById('detailedTableBody');
+            const noResultsMsg = document.getElementById('noResultsMsg');
+            const filteredCountBadge = document.getElementById('filteredCountBadge');
+            tbody.innerHTML = '';
+            
+            if(detailedCoursesData.length === 0) {
+                if(filteredCountBadge) filteredCountBadge.innerText = '0 مقرر';
+                return;
+            }
+
+            const filteredData = detailedCoursesData.filter(course => {
+                const term = searchTerm.toLowerCase();
+                const matchesSearch = course.code.toLowerCase().includes(term) || course.name.toLowerCase().includes(term);
+                
+                let matchesType = true;
+                if (typeFilter !== 'all') {
+                    if (typeFilter === 'عملي') matchesType = course.type.includes('عملي');
+                    else if (typeFilter === 'ورقي') matchesType = course.type.includes('ورقي');
+                    else if (typeFilter === 'محوسب') matchesType = course.type === 'محوسب';
+                }
+                return matchesSearch && matchesType;
+            });
+
+            if(filteredCountBadge) {
+                filteredCountBadge.innerText = `${filteredData.length} مقرر`;
+            }
+
+            if (filteredData.length === 0) {
+                noResultsMsg.classList.remove('hidden');
+            } else {
+                noResultsMsg.classList.add('hidden');
+                filteredData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 font-bold text-gray-900 dark:text-white">${row.code}</td>
+                        <td class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">${row.name}</td>
+                        <td class="px-4 py-3 text-center text-blue-600 dark:text-blue-400 font-bold">${row.maleSec}</td>
+                        <td class="px-4 py-3 text-center text-pink-600 dark:text-pink-400 font-bold">${row.femaleSec}</td>
+                        <td class="px-4 py-3 text-center bg-gray-50 dark:bg-gray-900/50 font-black text-gray-800 dark:text-gray-100">${row.totalSec}</td>
+                        <td class="px-4 py-3 text-center text-blue-600 dark:text-blue-400">${row.maleStu}</td>
+                        <td class="px-4 py-3 text-center text-pink-600 dark:text-pink-400">${row.femaleStu}</td>
+                        <td class="px-4 py-3 text-center bg-gray-50 dark:bg-gray-900/50 font-black text-gray-800 dark:text-gray-100">${row.totalStu}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-bold inline-block whitespace-nowrap ${row.typeClass}">${row.type}</span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => renderDetailedTable(e.target.value, typeFilterTable.value));
+        typeFilterTable.addEventListener('change', (e) => renderDetailedTable(searchInput.value, e.target.value));
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initCharts();
+            processRawData(); // يتم تشغيل تحليل البيانات فور فتح الصفحة
+        });
+
+    </script>
+</body>
+</html>
